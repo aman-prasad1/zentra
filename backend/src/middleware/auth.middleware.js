@@ -21,3 +21,15 @@ export const verifyJWT = asyncHandler(async (req, _, next ) => {
     req.user = user;
     next();
 })
+
+export const authorizeRoles = (...roles) => {
+    return (req, res, next) => {
+        if(!roles.includes(req.user.role)) {
+            return next (
+                new ApiError(401, `Role: ${req.user.role} is not allowed to access this resource`)
+            )
+        }
+
+        next();
+    };
+};
