@@ -35,6 +35,18 @@ const userSchema = new Schema({
         required: [true, "Please Enter Your Password"],
         minLength: [6, "Password must contains atleast 6 characters"]
     },
+    verifyCode: {
+        type: Number,
+        required: true
+    },
+    verifyCodeExpiry: {
+        type: Date,
+        required: true
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
     refreshToken: {
         type: String
     },
