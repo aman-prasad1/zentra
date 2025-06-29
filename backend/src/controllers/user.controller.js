@@ -1,0 +1,102 @@
+import { ApiResponse } from '../utils/ApiResponse.js';
+import { ApiError } from '../utils/ApiError.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { User } from '../models/user.model.js';
+import { sendVerificationEmail } from '../utils/sendVerificationEmail.js';
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import fs from 'fs';
+
+const registerUser = asyncHandler(async (req, res) => {
+
+    // extracting name, email, password and confirmPassword from requres body
+    const { name, email, password, confirmPassword } = req.body;
+    const avatarLocalPath = req.file?.path;
+
+
+    // if any fields are missing, remove saved avatar and throw an error
+    if ([name, email, password, confirmPassword].some((field) => !field || field?.trim() === "")) {
+        fs.unlink(avatarLocalPath, (error) => {});
+        throw new ApiError(400, "All fields are required");
+    }
+
+    if(password != confirmPassword) {
+        fs.unlink(avatarLocalPath, (error) => {});
+        throw new ApiError(400, "Confirm Passwrod and Password should be same");
+    }
+
+    if (!avatarLocalPath) {
+        throw new ApiError(400, "Avatar is required");
+    }
+
+
+    // checking user already existed or not
+    const existedUser = await User.findOne({ "email": email });
+    const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verifyCodeExpiry = new Date(Date.now() + 3 * 60 * 1000);
+
+    // if user already exists and verified
+    if (existedUser && existedUser.isVerified === true) {
+        fs.unlink(avatarLocalPath, (error) => {});
+        throw new ApiError(400, "User with this email allready exists");
+    }
+
+    // if user already exists but not verified
+    if (existedUser && existedUser.isVerified === false) {
+
+        // if old verifyCode expired, update user details and send new OTP
+        if (existedUser.verifyCodeExpiry < new Date()) {
+            existedUser.name = name;
+            existedUser.email = email;
+            existedUser.password = password;
+            existedUser.verifyCode = verifyCode;
+            existedUser.verifyCodeExpiry = verifyCodeExpiry; // expire in 3 minutes from now
+            const avatar = await uploadOnCloudinary(avatarLocalPath); // upload avatar on cloudinary
+            existedUser.avatar = avatar.url;
+            await existedUser.save();
+
+            const emailResponse = await sendVerificationEmail(email, name, verifyCode); // sending verification OTP
+            if (!emailResponse.success) {
+                throw new ApiError(500, "Something went wrong while sending verification mail");
+            } else {
+                return res
+                .status(200)
+                .json(
+                    new ApiResponse(200, {}, "OTP sent to you mail")
+                )
+            }
+        } else { // if verify code is not expired, throw error 
+            fs.unlink(avatarLocalPath, (error) => {});
+            throw new ApiError(400, "Try again after some time");
+        }
+    }
+
+    // user does not exisits
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    
+    const user = new User({
+        name: name,
+        email: email,
+        avatar: avatar.url,
+        password: password,
+        verifyCode: verifyCode,
+        verifyCodeExpiry: verifyCodeExpiry
+    });
+
+    await user.save();
+
+    const emailResponse = await sendVerificationEmail(email, name, verifyCode); // sending verification OTP
+    if (!emailResponse.success) {
+        throw new ApiError(500, "Something went wrong while sending verification mail");
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, {}, "OTP sent to you mail")
+    )
+})
+
+
+export {
+    registerUser,
+}
