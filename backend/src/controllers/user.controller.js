@@ -6,6 +6,22 @@ import { sendVerificationEmail } from '../utils/sendVerificationEmail.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import fs from 'fs';
 
+const generateAccessRefreshToken = async (userId) => {
+    try {
+        const user = await User.findById(userId);
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
+
+        user.refreshToken = refreshToken;
+        user.save({validateBeforeSave: false});
+
+        return {accessToken, refreshToken};
+
+    } catch (error) {
+        throw new ApiError(500, "Error while generating access and refresh tokens");
+    }
+}
+
 const registerUser = asyncHandler(async (req, res) => {
 
     // extracting name, email, password and confirmPassword from requres body
@@ -97,6 +113,45 @@ const registerUser = asyncHandler(async (req, res) => {
 })
 
 
+const loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    // checking for all fields
+    if([email, password].some((field) => !field || field?.trim() === "")) {
+        throw new ApiError(401, "All fields are required");
+    }
+
+    const user = await User.findOne({email: email});
+
+    if(!user || user.isVerified === false) {
+        throw new ApiError(404, "User Not Found");
+    }
+
+    // Matching password
+    const isPasswordMatched = await user.isPasswordCorrect(password);
+    
+    if(!isPasswordMatched) {
+        throw new ApiError(400, "Incorrect Password");
+    }
+
+    const {accessToken, refreshToken} = await generateAccessRefreshToken(user?._id);
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(200, {accessToken, refreshToken}, "User logged In Successfully")
+    );
+})
+
+
 export {
     registerUser,
+    loginUser,
 }
