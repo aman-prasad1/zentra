@@ -69,8 +69,10 @@ const registerUser = asyncHandler(async (req, res) => {
             const avatar = await uploadOnCloudinary(avatarLocalPath); // upload avatar on cloudinary
             existedUser.avatar = avatar.url;
             await existedUser.save();
-
-            const emailResponse = await sendVerificationEmail(email, name, verifyCode); // sending verification OTP
+            
+            const subject = "Zentra Verification Code";
+            const message = `Your verification code: ${verifyCode}`;
+            const emailResponse = await sendVerificationEmail(email, subject, message); // sending verification OTP
             if (!emailResponse.success) {
                 throw new ApiError(500, "Something went wrong while sending verification mail");
             } else {
@@ -100,7 +102,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
     await user.save();
 
-    const emailResponse = await sendVerificationEmail(email, name, verifyCode); // sending verification OTP
+    const subject = "Zentra Verification Code";
+    const message = `Your verification code: ${verifyCode}`;
+    const emailResponse = await sendVerificationEmail(email, subject, message); // sending verification OTP
     if (!emailResponse.success) {
         throw new ApiError(500, "Something went wrong while sending verification mail");
     }
