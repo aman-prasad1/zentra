@@ -4,6 +4,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { User } from '../models/user.model.js';
 import { sendVerificationEmail } from '../utils/sendVerificationEmail.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import validator from 'validator';
 import fs from 'fs';
 
 const generateAccessRefreshToken = async (userId) => {
@@ -13,7 +14,7 @@ const generateAccessRefreshToken = async (userId) => {
         const refreshToken = user.generateRefreshToken();
 
         user.refreshToken = refreshToken;
-        user.save({validateBeforeSave: false});
+        await user.save({validateBeforeSave: false});
 
         return {accessToken, refreshToken};
 
@@ -35,6 +36,11 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required");
     }
 
+    // checking email is valid or not
+    if(!validator.isEmail(email)) {
+        throw new ApiError(400, "Please enter a valid email");
+    }
+
     if(password != confirmPassword) {
         fs.unlink(avatarLocalPath, (error) => {});
         throw new ApiError(400, "Confirm Passwrod and Password should be same");
@@ -53,7 +59,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // if user already exists and verified
     if (existedUser && existedUser.isVerified === true) {
         fs.unlink(avatarLocalPath, (error) => {});
-        throw new ApiError(400, "User with this email allready exists");
+        throw new ApiError(400, "User with this email already exists");
     }
 
     // if user already exists but not verified
@@ -141,7 +147,7 @@ const loginUser = asyncHandler(async (req, res) => {
         secure: true
     }
 
-    res
+    return res
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
@@ -178,9 +184,53 @@ const logoutUser = asyncHandler(async (req, res) => {
     
 })
 
+const verifyUser = asyncHandler(async (req, res) => {
+    const { email, verifyCode } = req.body;
+
+    // Checking for email and verfiyCode
+    if(!email || email.trim() === "") {
+        throw new ApiError(400, "Email is required");
+    }
+    if(!verifyCode) {
+        throw new ApiError(400, "Verification Code is required");
+    }
+
+    const user = await User.findOne({email: email});
+
+    if(!user) {
+        throw new ApiError(400, "User with this email does not exists");
+    }
+
+    // if user is already verified the throw error
+    if(user.isVerified) {
+        throw new ApiError(400, "User with this email already verified");
+    }
+
+    // checking verification code expiry
+    if(user.verifyCodeExpiry < new Date()) {
+        throw new ApiError(400, "Verification Code expired. Please try again");
+    }
+
+    // matching verification code
+    if(user.verifyCode !== verifyCode) {
+        throw new ApiError(400, "Incorrect verification code");
+    }
+
+    // updating user
+    user.isVerified = true;
+    await user.save({validateBeforeSave: false});
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "User verified Successfully")
+        );
+})
+
 
 export {
     registerUser,
     loginUser,
     logoutUser,
+    verifyUser,
 }
