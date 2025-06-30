@@ -8,6 +8,7 @@ import {
     verifyUser,
     assignAdmin,
     changePassword,
+    forgetPasswrod,
  } from '../controllers/user.controller.js';
 
 
@@ -19,6 +20,7 @@ router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/verify-user").post(verifyUser);
 router.route("/change-password").put(verifyJWT, changePassword);
+router.route("/forget-password").post(forgetPasswrod);
 
 
 // Admin routes

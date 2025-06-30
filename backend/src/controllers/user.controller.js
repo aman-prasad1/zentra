@@ -253,6 +253,72 @@ const changePassword = asyncHandler(async (req, res) => {
 
 })
 
+const forgetPasswrod = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if(!email || email.trim() === "") {
+        throw new ApiError(400, "Please enter Email");
+    }
+
+    const user = await User.findOne({email: email});
+
+    if(!user || !user.isVerified) {
+        throw new ApiError(400, "User with this email does not exists");
+    }
+
+    const passwordVerifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const passwordVerifyCodeExpiry = new Date(Date.now() + 3 * 60 * 1000);
+    const emailResponse = await sendVerificationEmail(email, user.name, passwordVerifyCode); // sending verification OTP
+    if (!emailResponse.success) {
+        throw new ApiError(500, "Something went wrong while sending verification mail");
+    }
+
+    user.passwordVerifyCode = passwordVerifyCode;
+    user.passwrordVerifyCodeExpiry = passwordVerifyCodeExpiry;
+    await user.save({validateBeforeSave: false});
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "Verification code sent to your email")
+        )
+    
+})
+
+const changeForgottenPassword = asyncHandler(async (req, res) => {
+    const { email, passwordVerifyCode } = req.body;
+
+    if(!email || email.trim() === "") {
+        throw new ApiError(400, "Email is required");
+    }
+    if(!passwordVerifyCode) {
+        throw new ApiError(400, "Verification code is required");
+    }
+
+    const user = await User.findOne({email: email});
+
+    if(!user || !user.isVerified) {
+        throw new ApiError(400, "User with this email does not exists");
+    }
+
+    if(!user.passwordVerifyCode) {
+        throw new ApiError(400, "Password Verifaction Code is not requested");
+    }
+
+    if(user.passwrordVerifyCodeExpiry > new Date()) {
+        user.passwordVerifyCode = null;
+        user.passwrordVerifyCodeExpiry = null;
+        await user.save({validateBeforeSave: false});
+        throw new ApiError(400, "Verification Code expired");
+    }
+
+    if(user.passwordVerifyCode !== passwordVerifyCode) {
+        throw new ApiError(400, "Incorrect Verification Code");
+    }
+
+    user
+})
+
 // Admin controllers
 const assignAdmin = asyncHandler(async (req, res) => {
     const { userEmail } = req.body;
@@ -293,5 +359,6 @@ export {
     logoutUser,
     verifyUser,
     changePassword,
+    forgetPasswrod,
     assignAdmin,
 }

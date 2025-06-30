@@ -47,6 +47,12 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    passwordVerifyCode: {
+        type: Number
+    },
+    passwrordVerifyCodeExpiry: {
+        type: Date
+    },
     refreshToken: {
         type: String
     },
