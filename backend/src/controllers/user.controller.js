@@ -4,7 +4,6 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { User } from '../models/user.model.js';
 import { sendVerificationEmail } from '../utils/sendVerificationEmail.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
-import validator from 'validator';
 import fs from 'fs';
 
 const generateAccessRefreshToken = async (userId) => {
@@ -34,11 +33,6 @@ const registerUser = asyncHandler(async (req, res) => {
     if ([name, email, password, confirmPassword].some((field) => !field || field?.trim() === "")) {
         fs.unlink(avatarLocalPath, (error) => {});
         throw new ApiError(400, "All fields are required");
-    }
-
-    // checking email is valid or not
-    if(!validator.isEmail(email)) {
-        throw new ApiError(400, "Please enter a valid email");
     }
 
     if(password != confirmPassword) {
@@ -227,10 +221,77 @@ const verifyUser = asyncHandler(async (req, res) => {
         );
 })
 
+const changePassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+
+    if(newPassword !== confirmNewPassword) {
+        throw new ApiError(400, "New Password and Confirm Password should be same");
+    }
+
+    const user = await User.findById(req.user._id);
+
+    const passwordMatched = await user.isPasswordCorrect(oldPassword);
+
+    if(!passwordMatched) {
+        throw new ApiError(400, "Incorrect Password");
+    }
+    
+    // checking if newPasswrod and oldPassword were not same
+    const isSame = await user.isPasswordCorrect(newPassword);
+    if(isSame) {
+        throw new ApiError(400, "New Password cannot same as old password");
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "Passwrod updated")
+        )
+
+})
+
+// Admin controllers
+const assignAdmin = asyncHandler(async (req, res) => {
+    const { userEmail } = req.body;
+
+    if(!userEmail || userEmail.trim() === "") {
+        throw new ApiError(400, "User Email required");
+    }
+
+    const user = await User.findOne({email: userEmail});
+
+    if(!user) {
+        throw new ApiError(400, "User with this email does not exists");
+    }
+    if(!user.isVerified) {
+        throw new ApiError(400, "Requested User is not verified");
+    }
+    if(user.role === "admin") {
+        throw new ApiError(401, "Requested user is already admin");
+    }
+
+    // assigining user as admin
+    user.role = "admin";
+    await user.save({validateBeforeSave: false});
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "Requested user is now admin")
+        )
+})
+
+
+
 
 export {
     registerUser,
     loginUser,
     logoutUser,
     verifyUser,
+    changePassword,
+    assignAdmin,
 }
