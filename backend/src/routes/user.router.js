@@ -9,6 +9,7 @@ import {
     assignAdmin,
     changePassword,
     forgetPasswrod,
+    resetPassword,
  } from '../controllers/user.controller.js';
 
 
@@ -20,7 +21,8 @@ router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/verify-user").post(verifyUser);
 router.route("/change-password").put(verifyJWT, changePassword);
-router.route("/forget-password").post(forgetPasswrod);
+router.route("/forgot-password").post(forgetPasswrod);
+router.route("/reset-password/:token").put(resetPassword);
 
 
 // Admin routes

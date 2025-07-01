@@ -4,6 +4,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { User } from '../models/user.model.js';
 import { sendVerificationEmail } from '../utils/sendVerificationEmail.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import crypto from 'crypto';
 import fs from 'fs';
 
 const generateAccessRefreshToken = async (userId) => {
@@ -269,59 +270,75 @@ const forgetPasswrod = asyncHandler(async (req, res) => {
     if(!user || !user.isVerified) {
         throw new ApiError(400, "User with this email does not exists");
     }
-
-    const passwordVerifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const passwordVerifyCodeExpiry = new Date(Date.now() + 3 * 60 * 1000);
-    const emailResponse = await sendVerificationEmail(email, user.name, passwordVerifyCode); // sending verification OTP
-    if (!emailResponse.success) {
-        throw new ApiError(500, "Something went wrong while sending verification mail");
-    }
-
-    user.passwordVerifyCode = passwordVerifyCode;
-    user.passwrordVerifyCodeExpiry = passwordVerifyCodeExpiry;
+    
+    const resetToken = user.getResetPasswordToken();
     await user.save({validateBeforeSave: false});
+
+    const resetPasswordUrl = `${req.protocol}://${req.get("host")}/password/reset/${resetToken}`;
+    const message = `Your password reset URL is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
+
+    const emailResponse = await sendVerificationEmail(email, "Password Recovery", message);
+
+    if(emailResponse.success === false) {
+        user.resetPasswordToken = undefined;
+        user.resetPasswordTokenExpire = undefined;
+        await user.save({validateBeforeSave: false});
+        
+        throw new ApiError(500, "Something went wrong while sending Recovery Mail");
+    }
 
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {}, "Verification code sent to your email")
+            new ApiResponse(200, {}, "Password Recovery mail sent")
         )
-    
 })
 
-const changeForgottenPassword = asyncHandler(async (req, res) => {
-    const { email, passwordVerifyCode } = req.body;
+const resetPassword = asyncHandler(async (req, res) => {
+    const { email, newPassword, confirmNewPassword } = req.body;
 
-    if(!email || email.trim() === "") {
-        throw new ApiError(400, "Email is required");
+    if([email, newPassword, confirmNewPassword].some(field => !field || field.trim() === "")) {
+        throw new ApiError(400, "All fields are required");
     }
-    if(!passwordVerifyCode) {
-        throw new ApiError(400, "Verification code is required");
-    }
+    
+    const resetPasswordToken = crypto
+        .createHash("sha256")
+        .update(req.params.token)
+        .digest("hex");
+
 
     const user = await User.findOne({email: email});
 
     if(!user || !user.isVerified) {
-        throw new ApiError(400, "User with this email does not exists");
+        throw new ApiError(400, "User does not exists");
     }
 
-    if(!user.passwordVerifyCode) {
-        throw new ApiError(400, "Password Verifaction Code is not requested");
+    if( !user.resetPasswordToken 
+        || user.resetPasswordToken !== resetPasswordToken 
+        || user.resetPasswordTokenExpire < new Date()) 
+    {
+        throw new ApiError(400, "Reset Password Token is Invalid or Expired");
     }
 
-    if(user.passwrordVerifyCodeExpiry > new Date()) {
-        user.passwordVerifyCode = null;
-        user.passwrordVerifyCodeExpiry = null;
-        await user.save({validateBeforeSave: false});
-        throw new ApiError(400, "Verification Code expired");
+    if(newPassword !== confirmNewPassword) {
+        throw new ApiError(400, "New Password and Confirm Password should be same")
     }
 
-    if(user.passwordVerifyCode !== passwordVerifyCode) {
-        throw new ApiError(400, "Incorrect Verification Code");
-    }
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTokenExpire = undefined;
 
-    user
+    await user.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "Password changed")
+        )
 })
+
+
+
 
 // Admin controllers
 const assignAdmin = asyncHandler(async (req, res) => {
@@ -364,5 +381,6 @@ export {
     verifyUser,
     changePassword,
     forgetPasswrod,
+    resetPassword,
     assignAdmin,
 }
