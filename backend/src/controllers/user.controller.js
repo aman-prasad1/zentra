@@ -3,7 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { User } from '../models/user.model.js';
 import { sendVerificationEmail } from '../utils/sendVerificationEmail.js';
-import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { uploadOnCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import crypto from 'crypto';
 import fs from 'fs';
 
@@ -67,16 +67,22 @@ const registerUser = asyncHandler(async (req, res) => {
             existedUser.password = password;
             existedUser.verifyCode = verifyCode;
             existedUser.verifyCodeExpiry = verifyCodeExpiry; // expire in 3 minutes from now
+
+            deleteFromCloudinary(existedUser.avatar.public_id);
+
             const avatar = await uploadOnCloudinary(avatarLocalPath); // upload avatar on cloudinary
-            existedUser.avatar = avatar.url;
-            await existedUser.save();
+            existedUser.avatar.public_url = avatar.url;
+            existedUser.avatar.public_id = avatar.public_id;
+
             
             const subject = "Zentra Verification Code";
             const message = `Your verification code: ${verifyCode}`;
             const emailResponse = await sendVerificationEmail(email, subject, message); // sending verification OTP
             if (!emailResponse.success) {
+                deleteFromCloudinary(avatar.public_id);
                 throw new ApiError(500, "Something went wrong while sending verification mail");
             } else {
+                await existedUser.save(); // save user if everything is ok
                 return res
                 .status(200)
                 .json(
@@ -95,20 +101,25 @@ const registerUser = asyncHandler(async (req, res) => {
     const user = new User({
         name: name,
         email: email,
-        avatar: avatar.url,
+        avatar: {
+            public_id: avatar.public_id,
+            public_url: avatar.url
+        },
         password: password,
         verifyCode: verifyCode,
         verifyCodeExpiry: verifyCodeExpiry
     });
 
-    await user.save();
-
+    
     const subject = "Zentra Verification Code";
     const message = `Your verification code: ${verifyCode}`;
     const emailResponse = await sendVerificationEmail(email, subject, message); // sending verification OTP
     if (!emailResponse.success) {
+        deleteFromCloudinary(avatar.public_id);
         throw new ApiError(500, "Something went wrong while sending verification mail");
     }
+    
+    await user.save(); // if every thing is ok, save user details
 
     return res
     .status(200)
