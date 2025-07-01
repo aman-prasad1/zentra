@@ -337,7 +337,15 @@ const resetPassword = asyncHandler(async (req, res) => {
         )
 })
 
+const getUserDetails = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id).select("-password -refreshToken -verifyCode -verifyCodeExpiry -resetPasswordToken -resetPasswordTokenExpire");
 
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, user, "User fetched Successfully")
+        )
+})
 
 
 // Admin controllers
@@ -382,5 +390,6 @@ export {
     changePassword,
     forgetPasswrod,
     resetPassword,
+    getUserDetails,
     assignAdmin,
 }

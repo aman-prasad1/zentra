@@ -10,6 +10,7 @@ import {
     changePassword,
     forgetPasswrod,
     resetPassword,
+    getUserDetails,
  } from '../controllers/user.controller.js';
 
 
@@ -23,6 +24,7 @@ router.route("/verify-user").post(verifyUser);
 router.route("/change-password").put(verifyJWT, changePassword);
 router.route("/forgot-password").post(forgetPasswrod);
 router.route("/reset-password/:token").put(resetPassword);
+router.route("/get-user").get(verifyJWT, getUserDetails);
 
 
 // Admin routes
