@@ -68,7 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
             existedUser.verifyCode = verifyCode;
             existedUser.verifyCodeExpiry = verifyCodeExpiry; // expire in 3 minutes from now
 
-            deleteFromCloudinary(existedUser.avatar.public_id);
+            await deleteFromCloudinary(existedUser.avatar.public_id);
 
             const avatar = await uploadOnCloudinary(avatarLocalPath); // upload avatar on cloudinary
             existedUser.avatar.public_url = avatar.url;
@@ -79,7 +79,7 @@ const registerUser = asyncHandler(async (req, res) => {
             const message = `Your verification code: ${verifyCode}`;
             const emailResponse = await sendVerificationEmail(email, subject, message); // sending verification OTP
             if (!emailResponse.success) {
-                deleteFromCloudinary(avatar.public_id);
+                await deleteFromCloudinary(avatar.public_id);
                 throw new ApiError(500, "Something went wrong while sending verification mail");
             } else {
                 await existedUser.save(); // save user if everything is ok
@@ -115,7 +115,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const message = `Your verification code: ${verifyCode}`;
     const emailResponse = await sendVerificationEmail(email, subject, message); // sending verification OTP
     if (!emailResponse.success) {
-        deleteFromCloudinary(avatar.public_id);
+        await deleteFromCloudinary(avatar.public_id);
         throw new ApiError(500, "Something went wrong while sending verification mail");
     }
     
@@ -358,6 +358,86 @@ const getUserDetails = asyncHandler(async (req, res) => {
         )
 })
 
+const updateProfile = asyncHandler(async (req, res) => {
+    const { name } = req.body;
+    const avatarLocalPath = req.file?.path;
+
+    if(!name && !avatarLocalPath) {
+        fs.unlink(avatarLocalPath, (error) => {});
+        throw new ApiError(400, "Update fields are required");
+    }
+
+    const user = await User.findById(req.user._id);
+
+    // if avatar is not requested to change
+    if(!avatarLocalPath) {
+        user.name = name;
+        user.save();
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, {}, "Profile updated successfully")
+            )
+    }
+
+    // if avatar is requested to change.
+    const newAvatar = await uploadOnCloudinary(avatarLocalPath);
+
+    if(!newAvatar) {
+        fs.unlink(avatarLocalPath, (error) => {});
+        throw new ApiError(400, "Something went wrong while updating profile picture");
+    }
+    
+    // deleting old avatar
+    const oldPublic_id = user.avatar.public_id;
+    await deleteFromCloudinary(oldPublic_id);
+
+    user.avatar.public_id = newAvatar.public_id;
+    user.avatar.public_url = newAvatar.url;
+    if(name && name.trim() !== "") {
+        user.name = name;
+    }
+    user.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "Profile updated Successfully")
+        )
+})
+
+const deleteUser = asyncHandler(async (req, res) => {
+    const { password } = req.body;
+
+    if(!password) {
+        throw new ApiError(400, "Password is required");
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if(!user) {
+        throw new ApiError(400, "User does not exists");
+    }
+
+    const isPasswordMatched = await user.isPasswordCorrect(password);
+    if(!isPasswordMatched) {
+        throw new ApiError(400, "Incorrect Password");
+    }
+
+    // removing avatar from cloudinary
+    const imageId = user.avatar.public_id;
+
+    await user.deleteOne();
+    await deleteFromCloudinary(imageId);
+
+    return res
+        .status(201)
+        .json(
+            new ApiResponse(201, {}, "User deleted Successfully")
+        )
+
+})
 
 // Admin controllers
 const assignAdmin = asyncHandler(async (req, res) => {
@@ -402,5 +482,7 @@ export {
     forgetPasswrod,
     resetPassword,
     getUserDetails,
+    updateProfile,
+    deleteUser,
     assignAdmin,
 }

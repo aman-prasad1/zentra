@@ -11,6 +11,8 @@ import {
     forgetPasswrod,
     resetPassword,
     getUserDetails,
+    updateProfile,
+    deleteUser,
  } from '../controllers/user.controller.js';
 
 
@@ -25,6 +27,8 @@ router.route("/change-password").put(verifyJWT, changePassword);
 router.route("/forgot-password").post(forgetPasswrod);
 router.route("/reset-password/:token").put(resetPassword);
 router.route("/get-user").get(verifyJWT, getUserDetails);
+router.route("/update-profile").put(verifyJWT, upload.single('newAvatar'), updateProfile);
+router.route("/delete-user").delete(verifyJWT, deleteUser);
 
 
 // Admin routes
