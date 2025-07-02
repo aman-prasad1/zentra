@@ -23,10 +23,15 @@ const productSchema = new Schema({
     },
     images: [
         {
-            url: {
+            public_id: {
                 type: String,
                 required: true
-            }
+            },
+            public_url: {
+                type: String,
+                required: true
+            },
+            _id: false
         }
     ],
     category: {
