@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary, deleteFromCloudinary} from '../utils/cloudinary.js';
+import { ApiFeatures } from '../utils/ApiFeatures.js';
 import fs from 'fs';
 
 
@@ -48,7 +49,7 @@ const createProduct = asyncHandler(async (req, res) => {
         return res
             .status(200)
             .json(
-                new ApiResponse(200, product, )
+                new ApiResponse(200, product, "Product Added Successfully")
             )
 
 
@@ -64,7 +65,34 @@ const createProduct = asyncHandler(async (req, res) => {
     }
 })
 
+const getAllProducts = asyncHandler(async (req, res) => {
+    const resultPerPage = 8;
+    const productCount = await Product.countDocuments();
+
+    const apiFeature = new ApiFeatures(Product.find(), req.query)
+        .search()
+        .filter()
+        .pagination(resultPerPage);
+
+
+    let products = await apiFeature.query;
+    let filteredProductCount = products.length;
+    
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {
+                products,
+                productCount,
+                filteredProductCount,
+                resultPerPage
+            }, "Products Fetched")
+        )
+})
+
 
 export {
     createProduct,
+    getAllProducts,
 }
