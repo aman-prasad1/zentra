@@ -6,13 +6,17 @@ import {
     loginUser,
     logoutUser,
     verifyUser,
-    assignAdmin,
     changePassword,
     forgetPasswrod,
     resetPassword,
     getUserDetails,
     updateProfile,
+    deleteProfile,
+    
+    updateRole,
     deleteUser,
+    getSingleUser,
+    getAllUser,
  } from '../controllers/user.controller.js';
 
 
@@ -28,11 +32,15 @@ router.route("/forgot-password").post(forgetPasswrod);
 router.route("/reset-password/:token").put(resetPassword);
 router.route("/get-user").get(verifyJWT, getUserDetails);
 router.route("/update-profile").put(verifyJWT, upload.single('newAvatar'), updateProfile);
-router.route("/delete-user").delete(verifyJWT, deleteUser);
+router.route("/delete-profile").delete(verifyJWT, deleteProfile);
 
 
 // Admin routes
-router.route("/assign-admin").post(verifyJWT, authorizeRoles("admin"), assignAdmin);
+router.route("/admin/all-user").get(verifyJWT, authorizeRoles("admin"), getAllUser);
+router.route("/admin/user/:id")
+    .put(verifyJWT, authorizeRoles("admin"), updateRole)
+    .delete(verifyJWT, authorizeRoles("admin"), deleteUser)
+    .get(verifyJWT, authorizeRoles("admin"), getSingleUser)
 
 
 export default router;

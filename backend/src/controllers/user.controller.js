@@ -407,7 +407,7 @@ const updateProfile = asyncHandler(async (req, res) => {
         )
 })
 
-const deleteUser = asyncHandler(async (req, res) => {
+const deleteProfile = asyncHandler(async (req, res) => {
     const { password } = req.body;
 
     if(!password) {
@@ -440,14 +440,19 @@ const deleteUser = asyncHandler(async (req, res) => {
 })
 
 // Admin controllers
-const assignAdmin = asyncHandler(async (req, res) => {
-    const { userEmail } = req.body;
+const updateRole = asyncHandler(async (req, res) => {
+    const { newRole } = req.body;
 
-    if(!userEmail || userEmail.trim() === "") {
-        throw new ApiError(400, "User Email required");
+    if(!newRole || newRole.trim() === "") {
+        throw new ApiError(400, "New Role required");
     }
 
-    const user = await User.findOne({email: userEmail});
+    if(!["user", "admin"].includes(newRole)) {
+        throw new ApiError(400, "Invalid Role Type");
+    }
+
+    const user = await User.findById(req.params.id);
+
 
     if(!user) {
         throw new ApiError(400, "User with this email does not exists");
@@ -455,23 +460,64 @@ const assignAdmin = asyncHandler(async (req, res) => {
     if(!user.isVerified) {
         throw new ApiError(400, "Requested User is not verified");
     }
-    if(user.role === "admin") {
-        throw new ApiError(401, "Requested user is already admin");
-    }
 
     // assigining user as admin
-    user.role = "admin";
+    user.role = newRole;
     await user.save({validateBeforeSave: false});
 
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {}, "Requested user is now admin")
+            new ApiResponse(200, {}, `Requested User is now ${newRole}`)
         )
 })
 
+const deleteUser = asyncHandler(async (req, res) => {
+    
+    const userToDelete = await User.findById(req.params.id);
 
+    if(!userToDelete) {
+        throw new ApiError(400, "User does not exists");
+    }
 
+    // removing avatar from cloudinary
+    const imageId = userToDelete.avatar.public_id;
+
+    await userToDelete.deleteOne();
+    await deleteFromCloudinary(imageId);
+
+    return res
+        .status(201)
+        .json(
+            new ApiResponse(201, {}, "User deleted Successfully")
+        )
+})
+
+const getSingleUser = asyncHandler(async (req, res) => {
+    
+    const user = await User.findById(req.params.id).select("-password");
+
+    if(!user) {
+        throw new ApiError(400, "User does not exists");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, user, "User fetched successfully")
+        )
+})
+
+const getAllUser = asyncHandler(async (req, res) => {
+
+    const allUsers = await User.find().select("-password -refreshToken -verifyCode -verifyCodeExpiry -resetPasswordToken -resetPasswordTokenExpire");
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, allUsers, "Fetched all users Successfully")
+        )
+})
 
 export {
     registerUser,
@@ -483,6 +529,10 @@ export {
     resetPassword,
     getUserDetails,
     updateProfile,
+    deleteProfile,
+    
+    updateRole,
     deleteUser,
-    assignAdmin,
+    getSingleUser,
+    getAllUser,
 }
