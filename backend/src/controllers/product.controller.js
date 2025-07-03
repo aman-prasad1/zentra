@@ -115,9 +115,34 @@ const productDetails = asyncHandler(async (req, res) => {
         )
 })
 
+const deleteProduct = asyncHandler(async (req, res) => {
+
+    const product = await Product.findById(req.params.id);
+
+    if(!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    const images = product.images; // saving product images id to delete form cloudinary
+
+    await product.deleteOne(); // deleting product
+
+    // deleting images from cloudinary
+    for(const image of images) {
+        await deleteFromCloudinary(image.public_id);
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, "Product deleted Successfylly")
+        )
+})
+
 export {
     createProduct,
     getAllProducts,
     getAdminProducts,
     productDetails,
+    deleteProduct,
 }

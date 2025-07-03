@@ -3,6 +3,7 @@ import { verifyJWT, authorizeRoles } from '../middleware/auth.middleware.js';
 import { upload } from '../middleware/multer.middleware.js';
 import { 
     createProduct,
+    deleteProduct,
     getAdminProducts,
     getAllProducts,
     productDetails,
@@ -21,6 +22,7 @@ router.route('/new-product').post(
 router.route('/all-products').get(getAllProducts);
 router.route('/admin-products').get(verifyJWT, authorizeRoles("admin"), getAdminProducts);
 router.route('/details/:id').get(productDetails);
+router.route('/delete/:id').delete(verifyJWT, authorizeRoles("admin"), deleteProduct);
 
 
 export default router;
