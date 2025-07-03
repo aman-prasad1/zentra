@@ -101,8 +101,19 @@ const getAdminProducts = asyncHandler(async (req, res) => {
         )
 })
 
+const productDetails = asyncHandler(async (req, res) => {
+    const productDetail = await Product.findById(req.params.id);
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, productDetail, "Product Details fetched Successfully")
+        )
+})
+
 export {
     createProduct,
     getAllProducts,
     getAdminProducts,
+    productDetails,
 }

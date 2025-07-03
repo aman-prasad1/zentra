@@ -5,6 +5,7 @@ import {
     createProduct,
     getAdminProducts,
     getAllProducts,
+    productDetails,
 } from '../controllers/product.controller.js';
 
 
@@ -19,7 +20,7 @@ router.route('/new-product').post(
 
 router.route('/all-products').get(getAllProducts);
 router.route('/admin-products').get(verifyJWT, authorizeRoles("admin"), getAdminProducts);
-
+router.route('/details/:id').get(productDetails);
 
 
 export default router;
