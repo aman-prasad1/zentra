@@ -7,6 +7,7 @@ import {
     deleteProduct,
     getAdminProducts,
     getAllProducts,
+    getProductReviews,
     productDetails,
     updateProduct,
 } from '../controllers/product.controller.js';
@@ -33,5 +34,7 @@ router.route('/update-product/:id').put(
 
 router.route('/review')
     .post(verifyJWT, createProductReview)
+
+router.route('/reviews/:id').get(getProductReviews);
 
 export default router;
