@@ -59,6 +59,8 @@ const productSchema = new Schema({
             },
             comment: {
                 type: String,
+                required: true,
+                maxLength: [100, "Comment cannot exceed 100 characters"],
             }
         }
     ],

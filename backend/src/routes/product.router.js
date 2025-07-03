@@ -3,6 +3,7 @@ import { verifyJWT, authorizeRoles } from '../middleware/auth.middleware.js';
 import { upload } from '../middleware/multer.middleware.js';
 import { 
     createProduct,
+    createProductReview,
     deleteProduct,
     getAdminProducts,
     getAllProducts,
@@ -30,5 +31,7 @@ router.route('/update-product/:id').put(
     upload.fields([{name: 'product-images', maxCount: 4}]),
     updateProduct);
 
+router.route('/review')
+    .post(verifyJWT, createProductReview)
 
 export default router;

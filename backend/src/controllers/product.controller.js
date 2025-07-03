@@ -136,7 +136,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, "Product deleted Successfylly")
+            new ApiResponse(200, {}, "Product deleted Successfylly")
         )
 })
 
@@ -202,6 +202,45 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
 })
 
+const createProductReview = asyncHandler(async (req, res) => {
+    const { rating, comment, productId } = req.body;
+
+    if(isNaN(rating) || (rating < 1 || rating > 5)) {
+        throw new ApiError(400, "Rating should be a number and in between range 1-5");
+    }
+
+    const product = await Product.findById(productId);
+
+    if(!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    const newReview = {
+        user: req.user._id,
+        rating: rating,
+        comment: comment
+    }
+
+    product.reviews.push(newReview);
+    product.numberOfReviews = product.reviews.length;
+
+    // calculating product overall ragting
+    let totalRatingsCnt = 0;
+    for(const review of product.reviews) {
+        totalRatingsCnt += review.rating;
+    }
+
+    product.ratings = (totalRatingsCnt / product.numberOfReviews);
+
+    product.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, newReview, "Review Added Successfully")
+        )
+})
+
 export {
     createProduct,
     getAllProducts,
@@ -209,4 +248,5 @@ export {
     productDetails,
     deleteProduct,
     updateProduct,
+    createProductReview,
 }
