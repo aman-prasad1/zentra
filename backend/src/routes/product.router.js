@@ -3,6 +3,7 @@ import { verifyJWT, authorizeRoles } from '../middleware/auth.middleware.js';
 import { upload } from '../middleware/multer.middleware.js';
 import { 
     createProduct,
+    getAdminProducts,
     getAllProducts,
 } from '../controllers/product.controller.js';
 
@@ -17,6 +18,7 @@ router.route('/new-product').post(
         createProduct);
 
 router.route('/all-products').get(getAllProducts);
+router.route('/admin-products').get(verifyJWT, authorizeRoles("admin"), getAdminProducts);
 
 
 

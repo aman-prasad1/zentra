@@ -91,8 +91,18 @@ const getAllProducts = asyncHandler(async (req, res) => {
         )
 })
 
+const getAdminProducts = asyncHandler(async (req, res) => {
+    const products = await Product.find();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, products, "All admin products fetched")
+        )
+})
 
 export {
     createProduct,
     getAllProducts,
+    getAdminProducts,
 }
