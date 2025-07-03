@@ -5,6 +5,7 @@ import {
     createProduct,
     createProductReview,
     deleteProduct,
+    deleteReview,
     getAdminProducts,
     getAllProducts,
     getProductReviews,
@@ -34,6 +35,7 @@ router.route('/update-product/:id').put(
 
 router.route('/review')
     .post(verifyJWT, createProductReview)
+    .delete(verifyJWT, deleteReview)
 
 router.route('/reviews/:id').get(getProductReviews);
 

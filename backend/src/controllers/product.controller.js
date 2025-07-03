@@ -241,6 +241,49 @@ const createProductReview = asyncHandler(async (req, res) => {
         )
 })
 
+const deleteReview = asyncHandler(async (req, res) => {
+    const { productId, reviewId } = req.body;
+
+    if(!productId || !reviewId) {
+        throw new ApiError(400, "Product id and review id required");
+    }
+
+    const product = await Product.findById(productId);
+
+    if(!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    let reviewToDelete = null;
+    let newReviews = [];
+    let totalRatings = 0;
+    for(const review of product.reviews) {
+        if(review.user.toString() === req.user._id.toString() && review._id.toString() === reviewId.toString()) {
+            reviewToDelete = review;
+        } else {
+            newReviews.push(review);
+            totalRatings += review.rating;
+        }
+    }
+
+    if(!reviewToDelete) {
+        console.log("hello");
+        throw new ApiError(404, "Review not found");
+    }
+
+    product.numberOfReviews = newReviews.length;
+    product.ratings = (!product.numberOfReviews)? 0 : totalRatings / product.numberOfReviews;
+    product.reviews = newReviews;
+
+    await product.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, reviewToDelete, "Review deleted Successfully")
+        )
+})
+
 const getProductReviews = asyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
 
@@ -263,5 +306,6 @@ export {
     deleteProduct,
     updateProduct,
     createProductReview,
+    deleteReview,
     getProductReviews,
 }
