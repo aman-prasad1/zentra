@@ -104,6 +104,10 @@ const getAdminProducts = asyncHandler(async (req, res) => {
 const productDetails = asyncHandler(async (req, res) => {
     const productDetail = await Product.findById(req.params.id);
 
+    if(!productDetail) {
+        throw new ApiError(404, "Product not found")
+    }
+
     return res
         .status(200)
         .json(
