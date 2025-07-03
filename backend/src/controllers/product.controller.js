@@ -140,10 +140,73 @@ const deleteProduct = asyncHandler(async (req, res) => {
         )
 })
 
+const updateProduct = asyncHandler(async (req, res) => {
+    try {
+        const {name, description, price, category, stock} = req.body;
+
+        let product = await Product.findById(req.params.id);
+
+        if(!product) {
+            throw new ApiError(404, "Product not found");
+        }
+    
+        const newImages = []; // for new images
+
+        // updating details
+        product.name = (name && name.trim() !== "")? name : product.name;
+        product.description = (description && description.trim() !== "")? description : product.description;
+        product.price = (price)? price : product.price;
+        product.category = (category && category.trim() !== "")? category : product.category;
+        product.stock = (stock)? stock : product.stock;
+
+        await product.save();
+        
+        if(req.files['product-images']) { // if new images present, deleting old images and uploading new one
+            const oldImages = product.images;
+            
+            for(const image of oldImages) {
+                await deleteFromCloudinary(image.public_id);
+            }
+            
+            // uploading new images
+            for(const image of req.files['product-images']) {
+                const uploadedImage = await uploadOnCloudinary(image.path);
+                newImages.push({
+                    public_id: uploadedImage.public_id,
+                    public_url: uploadedImage.url
+                })
+            }
+        }
+
+        if(newImages.length !== 0) {
+            product.images = newImages;
+        }
+    
+        await product.save();
+    
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, product, "Product updated successfully")
+            )
+    } catch (error) {
+        if(req.files && req.files['product-images']) {
+            for(const image of req.files['product-images']) {
+                fs.unlink(image.path, (error) => {});
+            }
+        }
+
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Internal Server Error";
+        throw new ApiError(statusCode, message);
+    }
+})
+
 export {
     createProduct,
     getAllProducts,
     getAdminProducts,
     productDetails,
     deleteProduct,
+    updateProduct,
 }

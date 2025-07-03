@@ -7,6 +7,7 @@ import {
     getAdminProducts,
     getAllProducts,
     productDetails,
+    updateProduct,
 } from '../controllers/product.controller.js';
 
 
@@ -23,6 +24,11 @@ router.route('/all-products').get(getAllProducts);
 router.route('/admin-products').get(verifyJWT, authorizeRoles("admin"), getAdminProducts);
 router.route('/details/:id').get(productDetails);
 router.route('/delete/:id').delete(verifyJWT, authorizeRoles("admin"), deleteProduct);
+router.route('/update-product/:id').put(
+    verifyJWT,
+    authorizeRoles("admin"),
+    upload.fields([{name: 'product-images', maxCount: 4}]),
+    updateProduct);
 
 
 export default router;
