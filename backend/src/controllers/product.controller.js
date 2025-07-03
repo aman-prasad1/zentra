@@ -20,7 +20,7 @@ const createProduct = asyncHandler(async (req, res) => {
             throw new ApiError(400, "Price is required");
         }
     
-        if(req.files['product-images'].length === 0) {
+        if(!req.files['product-images']) {
             throw new ApiError(400, "Product Images are required");
         }
 
@@ -54,9 +54,10 @@ const createProduct = asyncHandler(async (req, res) => {
 
 
     } catch (error) {
-        // removing all images saved to public folder
-        for(const image of req.files['product-images']) {
-            fs.unlink(image.path, (error) => {});
+        if(req.files['product-images']) {
+            for(const image of req.files['product-images']) {
+                fs.unlink(image.path, (error) => {});
+            }
         }
 
         const statusCode = error.statusCode || 500;
