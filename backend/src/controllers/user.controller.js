@@ -6,6 +6,7 @@ import { sendVerificationEmail } from '../utils/sendVerificationEmail.js';
 import { uploadOnCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import crypto from 'crypto';
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
 
 const generateAccessRefreshToken = async (userId) => {
     try {
@@ -439,6 +440,44 @@ const deleteProfile = asyncHandler(async (req, res) => {
 
 })
 
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    const incommingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+
+    if(!incommingRefreshToken) {
+        throw new ApiError(401, "Unauthorized Access");
+    }
+
+    const decodedToken = jwt.verify(
+        incommingRefreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+    )
+
+    const user = await User.findById(decodedToken._id);
+    
+    if(!user) {
+        throw new ApiError(400, "Invalid Refresh Token");
+    }
+
+    if(incommingRefreshToken !== user.refreshToken) {
+        throw new ApiError(400, "RefreshToken expired or used");
+    }
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(200, {accessToken, refreshToken}, "Tokens refreshed")
+        )
+})
+
 // Admin controllers
 const updateRole = asyncHandler(async (req, res) => {
     const { newRole } = req.body;
@@ -530,6 +569,7 @@ export {
     getUserDetails,
     updateProfile,
     deleteProfile,
+    refreshAccessToken,
     
     updateRole,
     deleteUser,
