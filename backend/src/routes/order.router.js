@@ -7,12 +7,14 @@ import {
     makeOrder,
     ordersByUser,
     updateOrderStatus,
+    verifyOrderPayment,
 } from '../controllers/order.controller.js';
 
 
 const router = Router();
 
 router.route('/create-order').post(verifyJWT, makeOrder);
+router.route('/verify-payment').post(verifyJWT, verifyOrderPayment);
 router.route('/my-orders').get(verifyJWT, getMyOrders);
 router.route('/single-order/:id').get(verifyJWT, getOneOrder);
 

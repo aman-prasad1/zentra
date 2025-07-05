@@ -4,6 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { TAX_RATE } from '../constants.js';
+import { createRazorpayOrder, verifyRazorpayPayment } from '../utils/Razorpay.js';
 
 
 const makeOrder = asyncHandler(async (req, res) => {
@@ -94,25 +95,47 @@ const makeOrder = asyncHandler(async (req, res) => {
         shippingPrice: shippingPrice,
         totalPrice: totalPrice
     })
-    await order.save();
-
+    
     // handling online payment
     if (paymentMethod === "Online") {
-        // TODO: request a rayzor payment of totalPrice
-
-    } else {
-        // if payment method is Cash On Delivery
-        return res
-            .status(200)
-            .json(
-                new ApiResponse(200, order, "Order Placed Successfully")
-            )
+        const razorpayResponse = await createRazorpayOrder(order.totalPrice, order._id);
+        
+        if(razorpayResponse.success) {
+            order.razorpay_order_id = razorpayResponse.orderId;
+        } else {
+            throw new ApiError(500, "Something went wrong while making payment Id");
+        }
     }
 
+    await order.save();
     return res
         .status(200)
         .json(
             new ApiResponse(200, {order, }, "Order Created. Wating for payment")
+        )
+})
+
+const verifyOrderPayment = asyncHandler(async (req, res) => {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    const verificationResponse = await verifyRazorpayPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+
+    if(!verificationResponse.success) {
+        // if payement not verified
+        throw new ApiError(400, "Payment not verified");
+    }
+
+    const order = await Order.find({razorpay_order_id: razorpay_order_id});
+    order.razorpay_payment_id = razorpay_payment_id;
+    order.razorpay_signature = razorpay_signature;
+    order.paidAt = new Date();
+
+    await order.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, order, "Payment verified Successfully")
         )
 })
 
@@ -209,6 +232,7 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
 export {
     makeOrder,
+    verifyOrderPayment,
     getMyOrders,
     getOneOrder,
 

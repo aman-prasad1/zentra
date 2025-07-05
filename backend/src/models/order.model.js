@@ -70,19 +70,15 @@ const orderSchema = new Schema({
         type: String,
         required: true
     },
-    paymentInfo: {
-        id: {
-            type: String,
-            required: function () {
-                return this.paymentMethod !== 'COD'
-            }
-        },
-        status: {
-            type: String,
-            required: function () {
-                return this.paymentMethod !== 'COD'
-            }
-        },
+    razorpay_order_id: {
+        type: String,
+        unique: true
+    },
+    razorpay_payment_id: {
+        type: String,
+    },
+    razorpay_signature: {
+        type: String,
     },
     paidAt: {
         type: Date,
