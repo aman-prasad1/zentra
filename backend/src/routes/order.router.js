@@ -6,6 +6,7 @@ import {
     getOneOrder,
     makeOrder,
     ordersByUser,
+    updateOrderStatus,
 } from '../controllers/order.controller.js';
 
 
@@ -18,5 +19,6 @@ router.route('/single-order/:id').get(verifyJWT, getOneOrder);
 // admin routes
 router.route('/all-orders').get(verifyJWT, authorizeRoles("admin"), getAllOrders);
 router.route('/user-orders/:id').get(verifyJWT, authorizeRoles("admin"), ordersByUser);
+router.route('/update-order/:id').put(verifyJWT, authorizeRoles("admin"), updateOrderStatus);
 
 export default router;

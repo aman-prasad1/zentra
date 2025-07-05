@@ -76,7 +76,7 @@ const makeOrder = asyncHandler(async (req, res) => {
             product: product._id
         })
         
-        product.save();
+        await product.save();
     }
 
     // calculating tax price on all products and calculating total price 
@@ -94,7 +94,7 @@ const makeOrder = asyncHandler(async (req, res) => {
         shippingPrice: shippingPrice,
         totalPrice: totalPrice
     })
-    order.save();
+    await order.save();
 
     // handling online payment
     if (paymentMethod === "Online") {
@@ -168,6 +168,45 @@ const ordersByUser = asyncHandler(async (req, res) => {
         )
 })
 
+const updateOrderStatus = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    const { orderStatus } = req.body;
+
+    if(!order) {
+        throw new ApiError(404, "Order not found");
+    }
+
+    if(order.orderStatus === "Delivered") {
+        throw new ApiError(400, "Order allready Delivered");
+    }
+
+    // checking if payment is in online mode and pending then cann't change the orderStatus
+    if(order.paymentMethod === "Online" && order.paidAt === null) {
+        throw new ApiError(400, "Payment Method is online mode and payment is pending");
+    }
+
+    if(orderStatus === "Shipped") {
+        order.orderStatus = "Shipped";
+
+    } else if(orderStatus === "Delivered") {
+        order.orderStatus = "Delivered";
+        order.paidAt = new Date();
+        order.deliveredAt = new Date();
+
+    } else {
+        throw new ApiError(400, "Invalid order Status");
+    }
+
+    // saving order
+    await order.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, order, "Updated Successfully")
+        )
+})
+
 export {
     makeOrder,
     getMyOrders,
@@ -175,4 +214,5 @@ export {
 
     getAllOrders,
     ordersByUser,
+    updateOrderStatus,
 }
