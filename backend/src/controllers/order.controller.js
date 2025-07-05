@@ -147,8 +147,32 @@ const getOneOrder = asyncHandler(async (req, res) => {
         )
 })
 
+// Admin routes
+const getAllOrders = asyncHandler(async (req, res) => {
+    const orders = await Order.find();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, orders, "All orders fetched")
+        )
+})
+
+const ordersByUser = asyncHandler(async (req, res) => {
+    const orders = await Order.find({user: req.params.id});
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, orders, "Fetched all orders by this user")
+        )
+})
+
 export {
     makeOrder,
     getMyOrders,
     getOneOrder,
+
+    getAllOrders,
+    ordersByUser,
 }

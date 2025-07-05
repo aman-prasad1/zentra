@@ -44,8 +44,15 @@ const orderSchema = new Schema({
                 required: true,
             },
             image: {
-                type: String,
-                required: true,
+                public_id: {
+                    type: String,
+                    required: true
+                },
+                public_url: {
+                    type: String,
+                    required: true,
+                },
+                _id: false
             },
             product: {
                 type: mongoose.Schema.ObjectId,
