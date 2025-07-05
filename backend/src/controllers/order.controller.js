@@ -111,7 +111,7 @@ const makeOrder = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {order, }, "Order Created. Wating for payment")
+            new ApiResponse(200, order, "Order Created. Wating for payment")
         )
 })
 
