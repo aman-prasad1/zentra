@@ -16,16 +16,21 @@ import {
 
 const router = Router();
 
-// product routes
+router.route('/all-products').get(getAllProducts);
+router.route('/details/:id').get(productDetails);
+router.route('/review')
+    .post(verifyJWT, createProductReview)
+    .delete(verifyJWT, deleteReview)
+    router.route('/reviews/:id').get(getProductReviews);
+
+
+// Admin routes
 router.route('/new-product').post(
         verifyJWT,
         authorizeRoles("admin"),
         upload.fields([{ name: "product-images", maxCount: 4 }]),
         createProduct);
-
-router.route('/all-products').get(getAllProducts);
 router.route('/admin-products').get(verifyJWT, authorizeRoles("admin"), getAdminProducts);
-router.route('/details/:id').get(productDetails);
 router.route('/delete/:id').delete(verifyJWT, authorizeRoles("admin"), deleteProduct);
 router.route('/update-product/:id').put(
     verifyJWT,
@@ -33,10 +38,6 @@ router.route('/update-product/:id').put(
     upload.fields([{name: 'product-images', maxCount: 4}]),
     updateProduct);
 
-router.route('/review')
-    .post(verifyJWT, createProductReview)
-    .delete(verifyJWT, deleteReview)
 
-router.route('/reviews/:id').get(getProductReviews);
 
 export default router;

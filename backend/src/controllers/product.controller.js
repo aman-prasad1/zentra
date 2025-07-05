@@ -7,6 +7,143 @@ import { ApiFeatures } from '../utils/ApiFeatures.js';
 import fs from 'fs';
 
 
+const getAllProducts = asyncHandler(async (req, res) => {
+    const resultPerPage = 8;
+    const productCount = await Product.countDocuments();
+
+    const apiFeature = new ApiFeatures(Product.find(), req.query)
+        .search()
+        .filter()
+        .pagination(resultPerPage);
+
+
+    let products = await apiFeature.query;
+    let filteredProductCount = products.length;
+    
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {
+                products,
+                productCount,
+                filteredProductCount,
+                resultPerPage
+            }, "Products Fetched")
+        )
+})
+
+const productDetails = asyncHandler(async (req, res) => {
+    const productDetail = await Product.findById(req.params.id);
+
+    if(!productDetail) {
+        throw new ApiError(404, "Product not found")
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, productDetail, "Product Details fetched Successfully")
+        )
+})
+
+const createProductReview = asyncHandler(async (req, res) => {
+    const { rating, comment, productId } = req.body;
+
+    if(isNaN(rating) || (rating < 1 || rating > 5)) {
+        throw new ApiError(400, "Rating should be a number and in between range 1-5");
+    }
+
+    const product = await Product.findById(productId);
+
+    if(!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    const newReview = {
+        user: req.user._id,
+        rating: rating,
+        comment: comment
+    }
+
+    product.reviews.push(newReview);
+    product.numberOfReviews = product.reviews.length;
+
+    // calculating product overall ragting
+    let totalRatingsCnt = 0;
+    for(const review of product.reviews) {
+        totalRatingsCnt += review.rating;
+    }
+
+    product.ratings = (totalRatingsCnt / product.numberOfReviews);
+
+    await product.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, newReview, "Review Added Successfully")
+        )
+})
+
+const deleteReview = asyncHandler(async (req, res) => {
+    const { productId, reviewId } = req.body;
+
+    if(!productId || !reviewId) {
+        throw new ApiError(400, "Product id and review id required");
+    }
+
+    const product = await Product.findById(productId);
+
+    if(!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    let reviewToDelete = null;
+    let newReviews = [];
+    let totalRatings = 0;
+    for(const review of product.reviews) {
+        if(review.user.toString() === req.user._id.toString() && review._id.toString() === reviewId.toString()) {
+            reviewToDelete = review;
+        } else {
+            newReviews.push(review);
+            totalRatings += review.rating;
+        }
+    }
+
+    if(!reviewToDelete) {
+        console.log("hello");
+        throw new ApiError(404, "Review not found");
+    }
+
+    product.numberOfReviews = newReviews.length;
+    product.ratings = (!product.numberOfReviews)? 0 : totalRatings / product.numberOfReviews;
+    product.reviews = newReviews;
+
+    await product.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, reviewToDelete, "Review deleted Successfully")
+        )
+})
+
+const getProductReviews = asyncHandler(async (req, res) => {
+    const product = await Product.findById(req.params.id);
+
+    if(!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, product.reviews, "Reviews fetched Successfully")
+        )
+})
+
+// Admin controllers
 const createProduct = asyncHandler(async (req, res) => {
     try {
         const { name, description, price, category, stock } = req.body;
@@ -66,32 +203,6 @@ const createProduct = asyncHandler(async (req, res) => {
     }
 })
 
-const getAllProducts = asyncHandler(async (req, res) => {
-    const resultPerPage = 8;
-    const productCount = await Product.countDocuments();
-
-    const apiFeature = new ApiFeatures(Product.find(), req.query)
-        .search()
-        .filter()
-        .pagination(resultPerPage);
-
-
-    let products = await apiFeature.query;
-    let filteredProductCount = products.length;
-    
-
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, {
-                products,
-                productCount,
-                filteredProductCount,
-                resultPerPage
-            }, "Products Fetched")
-        )
-})
-
 const getAdminProducts = asyncHandler(async (req, res) => {
     const products = await Product.find();
 
@@ -99,20 +210,6 @@ const getAdminProducts = asyncHandler(async (req, res) => {
         .status(200)
         .json(
             new ApiResponse(200, products, "All admin products fetched")
-        )
-})
-
-const productDetails = asyncHandler(async (req, res) => {
-    const productDetail = await Product.findById(req.params.id);
-
-    if(!productDetail) {
-        throw new ApiError(404, "Product not found")
-    }
-
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, productDetail, "Product Details fetched Successfully")
         )
 })
 
@@ -202,110 +299,16 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
 })
 
-const createProductReview = asyncHandler(async (req, res) => {
-    const { rating, comment, productId } = req.body;
-
-    if(isNaN(rating) || (rating < 1 || rating > 5)) {
-        throw new ApiError(400, "Rating should be a number and in between range 1-5");
-    }
-
-    const product = await Product.findById(productId);
-
-    if(!product) {
-        throw new ApiError(404, "Product not found");
-    }
-
-    const newReview = {
-        user: req.user._id,
-        rating: rating,
-        comment: comment
-    }
-
-    product.reviews.push(newReview);
-    product.numberOfReviews = product.reviews.length;
-
-    // calculating product overall ragting
-    let totalRatingsCnt = 0;
-    for(const review of product.reviews) {
-        totalRatingsCnt += review.rating;
-    }
-
-    product.ratings = (totalRatingsCnt / product.numberOfReviews);
-
-    product.save();
-
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, newReview, "Review Added Successfully")
-        )
-})
-
-const deleteReview = asyncHandler(async (req, res) => {
-    const { productId, reviewId } = req.body;
-
-    if(!productId || !reviewId) {
-        throw new ApiError(400, "Product id and review id required");
-    }
-
-    const product = await Product.findById(productId);
-
-    if(!product) {
-        throw new ApiError(404, "Product not found");
-    }
-
-    let reviewToDelete = null;
-    let newReviews = [];
-    let totalRatings = 0;
-    for(const review of product.reviews) {
-        if(review.user.toString() === req.user._id.toString() && review._id.toString() === reviewId.toString()) {
-            reviewToDelete = review;
-        } else {
-            newReviews.push(review);
-            totalRatings += review.rating;
-        }
-    }
-
-    if(!reviewToDelete) {
-        console.log("hello");
-        throw new ApiError(404, "Review not found");
-    }
-
-    product.numberOfReviews = newReviews.length;
-    product.ratings = (!product.numberOfReviews)? 0 : totalRatings / product.numberOfReviews;
-    product.reviews = newReviews;
-
-    await product.save();
-
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, reviewToDelete, "Review deleted Successfully")
-        )
-})
-
-const getProductReviews = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
-
-    if(!product) {
-        throw new ApiError(404, "Product not found");
-    }
-
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, product.reviews, "Reviews fetched Successfully")
-        )
-})
 
 export {
-    createProduct,
     getAllProducts,
-    getAdminProducts,
     productDetails,
-    deleteProduct,
-    updateProduct,
     createProductReview,
     deleteReview,
     getProductReviews,
+
+    createProduct,
+    getAdminProducts,
+    deleteProduct,
+    updateProduct,
 }

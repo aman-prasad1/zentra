@@ -373,12 +373,12 @@ const updateProfile = asyncHandler(async (req, res) => {
     // if avatar is not requested to change
     if(!avatarLocalPath) {
         user.name = name;
-        user.save();
+        await user.save();
 
         return res
             .status(200)
             .json(
-                new ApiResponse(200, {}, "Profile updated successfully")
+                new ApiResponse(200, user, "Profile updated successfully")
             )
     }
 
@@ -399,7 +399,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     if(name && name.trim() !== "") {
         user.name = name;
     }
-    user.save();
+    await user.save();
 
     return res
         .status(200)

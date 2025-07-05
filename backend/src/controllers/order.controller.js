@@ -170,7 +170,7 @@ const getOneOrder = asyncHandler(async (req, res) => {
         )
 })
 
-// Admin routes
+// Admin controllers
 const getAllOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find();
 
