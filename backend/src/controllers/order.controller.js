@@ -30,15 +30,16 @@ const makeOrder = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid payement type");
     }
 
-    // checking all prducts are available on store
+    // checking orderedProducts array is available
     if (!orderedProducts) {
         throw new ApiError(400, "Ordered Product list required");
     }
-
+    
     // declaring variabels for calculating prices
     let itemsPrice = 0, taxPrice = 0, shippingPrice = 30;
     const orderItems = [];
-
+    
+    // checking all prducts are available on store
     // looping the the given orderedItems and making array of correct orderItems array
     for (let i = 0; i < orderedProducts.length; i++) {
         // checking for order id and quantity is provided
@@ -98,7 +99,7 @@ const makeOrder = asyncHandler(async (req, res) => {
     // handling online payment
     if (paymentMethod === "Online") {
         // TODO: request a rayzor payment of totalPrice
-        
+
     } else {
         // if payment method is Cash On Delivery
         return res
@@ -115,8 +116,39 @@ const makeOrder = asyncHandler(async (req, res) => {
         )
 })
 
+const getMyOrders = asyncHandler(async (req, res) => {
+    
+    // finding user
+    const orders = await Order.find({user: req.user?._id});
 
+    if(!orders) {
+        throw new ApiError(400, "No orders from this user");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, orders, "Order fetched successfully")
+        )
+})
+
+const getOneOrder = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+
+    if(!order || order.user.toString() != req.user._id.toString()) {
+        throw new ApiError(400, "Invalid Order ID");
+    }
+
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, order, "Order fetched Successfully")
+        )
+})
 
 export {
     makeOrder,
+    getMyOrders,
+    getOneOrder,
 }
