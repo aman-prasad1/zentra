@@ -107,7 +107,7 @@ const orderSchema = new Schema({
         default: "Processing",
     },
     deliveredAt: {
-        type: date
+        type: Date
     },
     createdAt: {
         type: Date,
