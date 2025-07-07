@@ -11,9 +11,9 @@ const SignUp = () => {
   const [errorMsg, setErrorMsg] = useState("");
 
   return (
-    <div className="h-screen w-screen flex justify-center items-center bg-amber-100">
+    <div className="h-screen w-screen flex justify-center items-center">
       <form className="w-11/12 h-9/12 p-4 sm:max-w-[500px] box-border flex flex-col gap-3 rounded-2xl shadow-2xl">
-        <h2 className="text-center text-3xl">SignUp</h2>
+        <h2 className="text-center text-4xl font-semibold">SignUp</h2>
 
         <div className="flex flex-col items-center gap-y-8 mt-5">
           <input
@@ -59,7 +59,7 @@ const SignUp = () => {
             >
               {showCnfPass ? <GoEye /> : <GoEyeClosed />}
             </div>
-            <span className="absolute left-1 top-10 text-red-700">/{errorMsg}</span>
+            <span className="absolute left-1 top-10 text-red-700">{errorMsg}</span>
           </div>
 
           <div className="w-full py-2 h-18 flex justify-center items-center box-border">
