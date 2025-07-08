@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { loginApi, signUpApi, logoutApi } from './authApi.js';
+import { signUpApi, verifyUserApi ,loginApi, logoutApi } from './authApi.js';
 
 
 export const signupUser = createAsyncThunk(
@@ -12,6 +12,17 @@ export const signupUser = createAsyncThunk(
         }
     }
 );
+
+export const verifyUser = createAsyncThunk(
+    'auth/verifyOTP',
+    async (data, { rejectWithValue }) => {
+        try {
+            return await verifyUserApi(data);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
 
 export const loginUser = createAsyncThunk(
     'auth/login',
@@ -59,13 +70,26 @@ const authSlice = createSlice(
                     state.error = null;
                 })
                 .addCase(signupUser.fulfilled, (state, action) => {
-                    state.status = "succeeded";
-                    state.user = action.payload.user;
+                    state.status = "verifying";
                     state.error = null;
                 })
                 .addCase(signupUser.rejected, (state, action) => {
                     state.status = "failed";
                     state.error = action.payload || "Signup Failed";
+                })
+
+                // verify-user
+                .addCase(verifyUser.pending, (state) => {
+                    state.status = "loading";
+                    state.error = null;
+                })
+                .addCase(verifyUser.fulfilled, (state, action) => {
+                    state.status = "succeeded";
+                    state.error = null;
+                })
+                .addCase(verifyUser.rejected, (state, action) => {
+                    state.status = "failed";
+                    state.error = action.payload || "Verification falied";
                 })
 
                 // login

@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import { GoEye, GoEyeClosed } from "react-icons/go";
 import { useDispatch, useSelector } from 'react-redux';
 import { signupUser } from '../features/auth/authSlice.js';
 import person from '../assets/person.png';
+import VerifyOTP from "../components/VerifyOTP.jsx";
 
 const SignUp = () => {
 
   const dispatch = useDispatch();
   const { status, error } = useSelector((state) => state.authSlice);
+  const navigate = useNavigate();
+
+  const formRef = useRef("");
 
   const [showCnfPass, setShowCnfPass] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -41,8 +46,19 @@ const SignUp = () => {
   useEffect(() => {
     if(status === "failed") {
       setErrorMsg(`*${error}`)
-    } else {
+      formRef.current.classList.remove("hidden")
+
+    } else if(status === "loading") {
       setErrorMsg("");
+      formRef.current.classList.remove("hidden")
+
+    } else if(status === "verifying") {
+      setErrorMsg("");
+      formRef.current.classList.add("hidden")
+
+    } else if(status === "succeeded") {
+      navigate("/login");
+
     }
   }, [status])
 
@@ -58,12 +74,14 @@ const SignUp = () => {
   }, []);
 
   return (
-    <div className="h-screen w-screen flex justify-center items-center">
-      <form onSubmit={handleSubmit} className="w-11/12 h-9/12 p-4 sm:max-w-[500px] box-border flex flex-col gap-3 rounded-2xl shadow-2xl">
+    <div className="h-screen w-screen relative flex justify-center items-center">
+      <form ref={formRef} onSubmit={handleSubmit} className="w-11/12 h-9/12 p-4 sm:max-w-[500px] box-border flex flex-col gap-3 rounded-2xl shadow-2xl">
         <h2 className="text-center text-4xl font-semibold">SignUp</h2>
 
         <div className="flex flex-col items-center gap-y-8 mt-5">
           <input
+            name="name"
+            autoComplete="off"
             type="text"
             className="border-b w-10/12 h-10 p-3 outline-none hover:scale-105 transition-all font-light"
             placeholder="Name"
@@ -71,6 +89,8 @@ const SignUp = () => {
             onChange={(e) => setName(e.target.value)}
           />
           <input
+            name="email"
+            autoComplete="off"
             type="text"
             className="border-b w-10/12 h-10 p-3 outline-none hover:scale-105 transition-all font-light"
             placeholder="Email"
@@ -79,6 +99,7 @@ const SignUp = () => {
           />
           <div className="border-b w-10/12 h-10 p-3 relative hover:scale-105 transition-all">
             <input
+              name="password"
               type={`${showPass ? "text" : "password"}`}
               className=" outline-none w-full font-light"
               placeholder="Password"
@@ -94,6 +115,7 @@ const SignUp = () => {
           </div>
           <div className="border-b w-10/12 h-10 p-3 relative hover:scale-105 transition-all">
             <input
+              name="cnfPassword"
               type={`${showCnfPass ? "text" : "password"}`}
               className={`outline-none w-full font-light`}
               placeholder="Confirm Password"
@@ -110,7 +132,7 @@ const SignUp = () => {
           </div>
 
           <div className="w-full py-2 h-18 flex justify-center items-center box-border">
-            <button className="py-2 px-4 rounded bg-amber-500 cursor-pointer hover:text-lg transition-all">
+            <button disabled={status === "loading"} className="py-2 px-4 rounded bg-amber-500 cursor-pointer hover:text-lg transition-all">
               Register
             </button>
           </div>
@@ -122,6 +144,7 @@ const SignUp = () => {
           </a>
         </span>
       </form>
+      {(status !== "verifying")? <></> : <VerifyOTP email={email} />}
     </div>
   );
 };

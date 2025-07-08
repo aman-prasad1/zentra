@@ -4,6 +4,7 @@
 
 :root {
     --font-montserrat: 'montserrat';
+    --main-bg: rgb(229, 229, 234);
 }
 
 body {

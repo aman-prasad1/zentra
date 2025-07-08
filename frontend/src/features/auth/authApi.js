@@ -21,6 +21,16 @@ export const signUpApi = async (data) => {
     }
 }
 
+export const verifyUserApi = async (data) => {
+    try {
+        const res = await axios.post(`${URL}/api/v1/user/verify-user`, data);
+        return res.data;
+    } catch (error) {
+        const message = error.response?.data?.message || "Verification Failed";
+        throw new Error(message);
+    }
+}
+
 export const loginApi = async (credentials) => {
     try {
         const res = await axios.post(`${URL}/api/v1/user/login`, { credentials });
