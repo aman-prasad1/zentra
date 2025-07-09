@@ -83,7 +83,7 @@ const authSlice = createSlice(
                     state.status = "loading";
                     state.error = null;
                 })
-                .addCase(verifyUser.fulfilled, (state, action) => {
+                .addCase(verifyUser.fulfilled, (state) => {
                     state.status = "succeeded";
                     state.error = null;
                 })
@@ -99,7 +99,7 @@ const authSlice = createSlice(
                 })
                 .addCase(loginUser.fulfilled, (state, action) => {
                     state.status = "succeeded";
-                    state.user = action.payload.user;
+                    state.user = action.payload.data.user;
                     state.error = null;
                 })
                 .addCase(loginUser.rejected, (state, action) => {

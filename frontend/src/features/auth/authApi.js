@@ -33,7 +33,7 @@ export const verifyUserApi = async (data) => {
 
 export const loginApi = async (credentials) => {
     try {
-        const res = await axios.post(`${URL}/api/v1/user/login`, { credentials });
+        const res = await axios.post(`${URL}/api/v1/user/login`, credentials, {withCredentials: true});
         return res.data;
 
     } catch (error) {
