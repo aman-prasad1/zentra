@@ -87,7 +87,7 @@ const registerUser = asyncHandler(async (req, res) => {
                 return res
                 .status(200)
                 .json(
-                    new ApiResponse(200, {}, "OTP sent to you mail")
+                    new ApiResponse(200, "OTP sent to you mail")
                 )
             }
         } else { // if verify code is not expired, throw error 
@@ -125,7 +125,7 @@ const registerUser = asyncHandler(async (req, res) => {
     return res
     .status(200)
     .json(
-        new ApiResponse(200, {}, "OTP sent to you mail")
+        new ApiResponse(200, "OTP sent to you mail")
     )
 })
 
@@ -151,6 +151,8 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Incorrect Password");
     }
 
+    const loggedUser = await User.findById(user._id).select("-password -refreshToken -verifyCode -verifyCodeExpiry -resetPasswordToken -resetPasswordTokenExpire");
+
     const {accessToken, refreshToken} = await generateAccessRefreshToken(user?._id);
 
     const options = {
@@ -163,7 +165,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
-        new ApiResponse(200, {"user": user}, "User logged In Successfully")
+        new ApiResponse(200, "User logged In Successfully", {user: loggedUser})
     );
 })
 
@@ -190,7 +192,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
     .json(
-        new ApiResponse(201, {}, "User logged Out")
+        new ApiResponse(201, "User logged Out")
     )
     
 })
@@ -234,7 +236,7 @@ const verifyUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {}, "User verified Successfully")
+            new ApiResponse(200, "User verified Successfully")
         );
 })
 
@@ -265,7 +267,7 @@ const changePassword = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {}, "Passwrod updated")
+            new ApiResponse(200, "Passwrod updated")
         )
 
 })
@@ -302,7 +304,7 @@ const forgetPasswrod = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {}, "Password Recovery mail sent")
+            new ApiResponse(200, "Password Recovery mail sent")
         )
 })
 
@@ -345,7 +347,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {}, "Password changed")
+            new ApiResponse(200, "Password changed")
         )
 })
 
@@ -355,7 +357,7 @@ const getUserDetails = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, user, "User fetched Successfully")
+            new ApiResponse(200, "User fetched Successfully", {user})
         )
 })
 
@@ -368,7 +370,7 @@ const updateProfile = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Update fields are required");
     }
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select("-password -refreshToken -verifyCode -verifyCodeExpiry -resetPasswordToken -resetPasswordTokenExpire");
 
     // if avatar is not requested to change
     if(!avatarLocalPath) {
@@ -378,7 +380,7 @@ const updateProfile = asyncHandler(async (req, res) => {
         return res
             .status(200)
             .json(
-                new ApiResponse(200, user, "Profile updated successfully")
+                new ApiResponse(200, "Profile updated successfully", {user})
             )
     }
 
@@ -404,7 +406,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {}, "Profile updated Successfully")
+            new ApiResponse(200, "Profile updated Successfully", {user})
         )
 })
 
@@ -435,7 +437,7 @@ const deleteProfile = asyncHandler(async (req, res) => {
     return res
         .status(201)
         .json(
-            new ApiResponse(201, {}, "User deleted Successfully")
+            new ApiResponse(201, "User deleted Successfully")
         )
 
 })
@@ -474,7 +476,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(
-            new ApiResponse(200, {accessToken, refreshToken}, "Tokens refreshed")
+            new ApiResponse(200, "Tokens refreshed", {accessToken, refreshToken})
         )
 })
 
@@ -507,7 +509,7 @@ const updateRole = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {}, `Requested User is now ${newRole}`)
+            new ApiResponse(200, `Requested User is now ${newRole}`)
         )
 })
 
@@ -528,7 +530,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     return res
         .status(201)
         .json(
-            new ApiResponse(201, {}, "User deleted Successfully")
+            new ApiResponse(201, "User deleted Successfully")
         )
 })
 
@@ -543,7 +545,7 @@ const getSingleUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, user, "User fetched successfully")
+            new ApiResponse(200, "User fetched successfully", {user})
         )
 })
 
@@ -554,7 +556,7 @@ const getAllUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, allUsers, "Fetched all users Successfully")
+            new ApiResponse(200, "Fetched all users Successfully", {allUsers})
         )
 })
 

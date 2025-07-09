@@ -111,7 +111,7 @@ const makeOrder = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, order, "Order Created. Wating for payment")
+            new ApiResponse(200, "Order Created. Wating for payment", {order})
         )
 })
 
@@ -135,7 +135,7 @@ const verifyOrderPayment = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, order, "Payment verified Successfully")
+            new ApiResponse(200, "Payment verified Successfully", {order})
         )
 })
 
@@ -151,7 +151,7 @@ const getMyOrders = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, orders, "Order fetched successfully")
+            new ApiResponse(200, "Order fetched successfully", {orders})
         )
 })
 
@@ -166,7 +166,7 @@ const getOneOrder = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, order, "Order fetched Successfully")
+            new ApiResponse(200, "Order fetched Successfully", {order})
         )
 })
 
@@ -177,7 +177,7 @@ const getAllOrders = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, orders, "All orders fetched")
+            new ApiResponse(200, "All orders fetched", {orders})
         )
 })
 
@@ -187,7 +187,7 @@ const ordersByUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, orders, "Fetched all orders by this user")
+            new ApiResponse(200, "Fetched all orders by this user", {orders})
         )
 })
 
@@ -226,7 +226,7 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, order, "Updated Successfully")
+            new ApiResponse(200, "Updated Successfully", {order})
         )
 })
 
