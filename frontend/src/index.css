@@ -5,9 +5,21 @@
 :root {
     --font-montserrat: 'montserrat';
     --main-bg: rgb(229, 229, 234);
+    --nav-bg: rgb(217, 217, 222);
+    --primary-btn-bg: rgb(252, 154, 13, 1);
+    --sidebar-bg: rgb(220, 224, 225);
+}
+
+* {
+    box-sizing: border-box;
+    ::-webkit-scrollbar { 
+        display: none; 
+    }
+    scrollbar-width: none;
 }
 
 body {
     font-family: var(--font-montserrat);
     background-color: rgb(229, 229, 234);
+    overflow-x: hidden;
 }

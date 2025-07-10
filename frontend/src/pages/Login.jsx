@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { GoEye, GoEyeClosed } from "react-icons/go";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router";
@@ -8,8 +9,11 @@ const SignUp = () => {
 
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((state) => state.authSlice);
+
   const navigate = useNavigate();
 
+  const mainRef = useRef("");
+  
   const [showPass, setShowPass] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,8 +40,12 @@ const SignUp = () => {
     }
   }, [status])
 
+  useEffect(() => {
+    mainRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [])
+
   return (
-    <div className="h-screen w-screen relative flex justify-center items-center">
+    <div ref={mainRef} className="h-screen w-screen relative flex justify-center items-center">
       <form onSubmit={handleSubmit} className="w-11/12 p-4 sm:max-w-[500px] box-border flex flex-col gap-3 rounded-2xl shadow-2xl">
         <h2 className="text-center text-4xl font-semibold">Login</h2>
 
@@ -69,16 +77,16 @@ const SignUp = () => {
             <span className="absolute left-1 top-10 text-red-700">{errorMsg}</span>
           </div>
           <div className="w-full py-2 h-18 flex justify-center items-center box-border">
-            <button disabled={status === "loading"} className="py-2 px-4 rounded bg-amber-500 cursor-pointer hover:text-lg transition-all">
+            <button disabled={status === "loading"} className="py-2 px-4 rounded bg-[var(--primary-btn-bg)] cursor-pointer hover:text-lg transition-all">
               Login
             </button>
           </div>
         </div>
         <span className="text-center font-light p-2">
           Don't have an account{" "}
-          <a href="/signup" className="text-blue-700 font-bold underline">
+          <Link to="/signup" className="text-blue-700 font-bold underline">
             SignUp
-          </a>
+          </Link>
         </span>
       </form>
     </div>
