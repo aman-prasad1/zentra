@@ -1,5 +1,7 @@
-import { lazy, Profiler, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser } from "./features/auth/authSlice.js";
 import Loader from "./components/Loader";
 
 const Home = lazy(() => import("./pages/Home.jsx"));
@@ -11,6 +13,15 @@ const ContactUs = lazy(() => import("./pages/ContactUs.jsx"));
 const Profile = lazy(() => import("./pages/Profile.jsx"));
 
 const App = () => {
+
+  const dispatch = useDispatch();
+  let { user, status } = useSelector((state) => state.authSlice);
+
+  // fetching user on first load
+  useEffect(() => {
+    dispatch(getUser());
+  },[])
+
   return (
     <BrowserRouter>
       <Suspense fallback={<Loader />}>
