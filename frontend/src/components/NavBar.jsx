@@ -2,14 +2,15 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Zentra from '../assets/zentra.png'
 import SideBar from "./SideBar";
+import SearchBar from "./SearchBar";
 
 const NavBar = () => {
   
   const { user } = useSelector((state) => state.authSlice);
 
   return (
-    <div className="w-full h-16 fixed z-30 top-0 left-0 bg-[var(--nav-bg)] shadow px-8 flex flex-row-reverse sm:flex-row justify-between items-center">
-      <div className="h-full flex items-center">
+    <div className="w-full h-16 fixed z-30 top-0 left-0 bg-[var(--nav-bg)] shadow px-2 sm:px-8 flex flex-row-reverse md:flex-row justify-between items-center">
+      <div className="h-[80%] sm:h-full flex items-center">
         <div className="h-full">
           <img src={Zentra} alt="Zentra" className="h-full mix-blend-color-burn" />
         </div>
@@ -18,8 +19,11 @@ const NavBar = () => {
         </h1>
       </div>
 
+      {/* Search Bar */}
+      <SearchBar />
+
       {/* Right div */}
-      <div className="h-full pr-4 hidden sm:flex items-center justify-end gap-6 text-lg font-medium text-slate-700">
+      <div className="h-full pr-4 hidden md:flex items-center justify-end gap-6 text-lg font-medium text-slate-700">
         <Link to="/" className="hover:cursor-pointer hover:scale-105 transition-all">Home</Link>
         <Link to="/products" className="hover:cursor-pointer hover:scale-105 transition-all">Products</Link>
         <Link to="/contact" className="hover:cursor-pointer hover:scale-105 transition-all">Contact Us</Link>
