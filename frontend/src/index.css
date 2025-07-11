@@ -23,3 +23,17 @@ body {
     background-color: rgb(229, 229, 234);
     overflow-x: hidden;
 }
+
+.multiline-ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* change to 3 for 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.filter-amber-700 {
+  filter: invert(50%) sepia(99%) saturate(600%) hue-rotate(5deg) brightness(98%) contrast(104%);
+}
+.filter-slate-500 {
+  filter: invert(57%) sepia(9%) saturate(380%) hue-rotate(183deg) brightness(91%) contrast(89%);
+}

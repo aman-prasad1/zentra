@@ -21,6 +21,8 @@ const productSlice = createSlice(
         name: 'product',
         initialState: {
             products: [],
+            productCount: 0,
+            resultPerPage: 8,
             productDetail: null,
             loading: false,
             error: null
@@ -38,6 +40,8 @@ const productSlice = createSlice(
                 })
                 .addCase(getProducts.fulfilled, (state, action) => {
                     state.products = action.payload.data.products;
+                    state.productCount = action.payload.data.productCount;
+                    state.resultPerPage = action.payload.data.resultPerPage;
                     state.loading = false;
                     state.error = null;
                 })
