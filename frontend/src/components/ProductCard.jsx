@@ -1,11 +1,16 @@
-import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import RatingsStar from './RatingsStar';
 
 const ProductCard = ({product}) => {
 
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/products/details/${product?._id}`);
+  }
 
   return (
-    <div className='w-60 h-fit max-h-[311px] px-2 rounded-2xl shadow-xl hover:scale-105 transition-all'>
+    <div onClick={handleClick} className='w-60 h-fit max-h-[311px] px-2 rounded-2xl shadow-xl hover:scale-105 hover:cursor-pointer transition-all'>
 
       {/* Image div */}
       <div className='h-8/12 lg:h-7/12 max-h-[180px] w-full rounded-2xl flex justify-center overflow-hidden'>

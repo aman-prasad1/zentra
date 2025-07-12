@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./features/auth/authSlice.js";
 import Loader from "./components/Loader";
+import ProductDetails from "./pages/ProductDetails.jsx";
 
 const Home = lazy(() => import("./pages/Home.jsx"));
 const SignUp = lazy(()=> import("./pages/SignUp.jsx"));
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/products" element={<Product />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/products/details/:id" element={<ProductDetails />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

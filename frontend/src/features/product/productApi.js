@@ -21,3 +21,14 @@ export const getProductsApi = async (data) => {
         throw new Error(message);
     }
 }
+
+export const getProductDetailsApi = async (data) => {
+    try {
+        const res = await axios.get(`${URL}/details/${data?.id}`);
+
+        return res.data;
+    } catch (error) {
+        const message = error.response?.data?.message || "Error while finding product";
+        throw new Error(message);
+    }
+}

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     getProductsApi,
+    getProductDetailsApi,
 } from './productApi.js';
 
 
@@ -9,6 +10,17 @@ export const getProducts = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             return await getProductsApi(data);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const getProductDetails = createAsyncThunk(
+    'product/details',
+    async (data, { rejectWithValue }) => {
+        try {
+            return await getProductDetailsApi(data);
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -48,6 +60,23 @@ const productSlice = createSlice(
                 .addCase(getProducts.rejected, (state, action) => {
                     state.loading = false;
                     state.error = action.payload || "Failed to fetch products";
+                })
+
+                // get details
+                .addCase(getProductDetails.pending, (state) => {
+                    state.productDetail = null;
+                    state.loading = true;
+                    state.error = null;
+                })
+                .addCase(getProductDetails.fulfilled, (state, action) => {
+                    state.productDetail = action.payload.data.productDetail;
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(getProductDetails.rejected, (state, action) => {
+                    state.productDetail = null;
+                    state.loading = false;
+                    state.error = action.payload;
                 })
         }
     }
