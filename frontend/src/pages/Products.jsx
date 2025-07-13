@@ -27,8 +27,8 @@ const Product = () => {
 
 
   return (
-    <div className=''>
-      <div className='grid w-full gap-4 place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-4 p-2 sm:p-4'>
+    <div className='lg:pt-5'>
+      <div className='grid w-full gap-x-0 gap-y-20 place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-4 p-2 sm:p-4'>
         {products?.map((product, index) => {
           return <ProductCard key={index}  product={product} />
         })}
