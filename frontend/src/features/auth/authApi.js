@@ -60,7 +60,8 @@ export const getUserApi = async () => {
         return res.data;
     } catch (error) {
         try {
-            const res = await axios.post(`${URL}/refresh-tokens`, { withCredentials: true });
+            await axios.post(`${URL}/refresh-tokens`, {}, { withCredentials: true });
+            const res = await axios.get(`${URL}/get-user`, { withCredentials: true });
             return res.data;
         } catch (error) {
             const message = "Unauthorized Access";
