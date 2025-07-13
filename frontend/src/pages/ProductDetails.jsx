@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { getProductDetails } from '../features/product/productSlice.js';
+import { addToCart } from '../features/cart/cartSlice.js';
 import ImageCarousel from '../components/ImageCarousel.jsx';
 import RatingsStar from '../components/RatingsStar.jsx';
 import { CiShoppingCart } from "react-icons/ci";
@@ -14,6 +15,7 @@ const ProductDetails = () => {
 
   const dispatch = useDispatch();
   const { productDetail } = useSelector((state) => state.productSlice);
+  const { cartItems } = useSelector((state) => state.cartSlice);
 
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [isDescOpen, setIsDescOpen] = useState(true);
@@ -23,6 +25,15 @@ const ProductDetails = () => {
   useEffect(() => {
     dispatch(getProductDetails({id}));
   }, []);
+
+
+  const handleAddToCart = () => {
+    try {
+        dispatch(addToCart(productDetail?._id));
+    } catch (error) {
+        console.log(error)
+    }
+  }
 
   return (
     <div className='w-full flex flex-col md:flex-row items-center md:items-start'>
@@ -42,7 +53,7 @@ const ProductDetails = () => {
 
         {/* Add to cart or Buy */}
         <div className='mt-6 flex gap-3 text-white md:font-semibold'>
-            <button className='px-4 py-3 flex items-center rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Add to<CiShoppingCart className='text-3xl' /></button>
+            <button onClick={handleAddToCart} className='px-4 py-3 flex items-center rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Add to<CiShoppingCart className='text-3xl' /></button>
             <button className='px-4 py-3 rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Buy Now</button>
         </div>
 

@@ -14,10 +14,6 @@ const ImageCarousel = ({images}) => {
     return () => clearInterval(timer);
   }, [images?.length]);
 
-  useEffect(() => {
-    console.log(imgToShow)
-  }, [imgToShow])
-
   return (
     <div className="w-[90%] max-w-[300px] md:max-w-full md:w-4/10 h-fit p-10 flex gap-20 overflow-hidden">
       <div className="overflow-hidden shadow-2xl rounded-2xl flex">
