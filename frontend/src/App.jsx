@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./features/auth/authSlice.js";
 import Loader from "./components/Loader";
-import ProductDetails from "./pages/ProductDetails.jsx";
 
 const Home = lazy(() => import("./pages/Home.jsx"));
 const SignUp = lazy(()=> import("./pages/SignUp.jsx"));
@@ -12,6 +11,9 @@ const NavBar = lazy(() => import("./components/NavBar.jsx"));
 const Product = lazy(() => import("./pages/Products.jsx"));
 const ContactUs = lazy(() => import("./pages/ContactUs.jsx"));
 const Profile = lazy(() => import("./pages/Profile.jsx"));
+const ProductDetails = lazy(() => import("./pages/ProductDetails.jsx"));
+const Cart = lazy(() => import("./pages/Cart.jsx"));
+
 
 const App = () => {
 
@@ -35,6 +37,7 @@ const App = () => {
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/products/details/:id" element={<ProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

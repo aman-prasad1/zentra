@@ -25,6 +25,10 @@ const Product = () => {
     setSearchParams(params);
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  })
+
 
   return (
     <div className='lg:pt-5'>

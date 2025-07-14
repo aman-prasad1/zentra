@@ -17,6 +17,19 @@ export const addToCart = createAsyncThunk(
     }
 )
 
+export const getCart = createAsyncThunk(
+    'cart/getCart',
+    (_, { rejectWithValue }) => {
+        const cart = JSON.parse(localStorage.getItem('cart'));
+        if(cart) {
+            return cart;
+        }
+        else {
+            return rejectWithValue("No Items in cart");
+        }
+    }
+)
+
 
 const cartSlice = createSlice(
     {
@@ -33,7 +46,7 @@ const cartSlice = createSlice(
         extraReducers: (builder) => {
             builder
 
-                // create order
+                // add to cart
                 .addCase(addToCart.pending, (state) => {
                     state.loading = true
                 })
@@ -47,6 +60,15 @@ const cartSlice = createSlice(
                     state.loading = false;
                     state.error = action.payload;
                 })
+
+                // get cart
+                .addCase(getCart.fulfilled, (state, action) =>{
+                    state.cartItems = action.payload.cartItems;
+                    state.totalPrice = action.payload.totalPrice;
+                    state.loading = false;
+                    state.error = null;
+                })
+
         }
     }
 )

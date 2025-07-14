@@ -49,12 +49,15 @@ const ProductDetails = () => {
         <RatingsStar ratings={productDetail?.ratings} />
 
         {/* Price */}
-        <span className='text-xl text-slate-600'>Rs.{productDetail?.price}</span>
+        <div className='flex gap-3 items-center'>
+            <span className='text-xl text-slate-600'>Rs.{productDetail?.price}</span>
+            <span className={`italic font-semibold pt-1 ${(productDetail?.stock > 0)? "text-green-600" : "text-red-700"}`}>In Stock {productDetail?.stock}</span>
+        </div> 
 
         {/* Add to cart or Buy */}
         <div className='mt-6 flex gap-3 text-white md:font-semibold'>
             <button onClick={handleAddToCart} className='px-4 py-3 flex items-center rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Add to<CiShoppingCart className='text-3xl' /></button>
-            <button className='px-4 py-3 rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Buy Now</button>
+            <button disabled={productDetail?.stock <= 0} className='px-4 py-3 rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Buy Now</button>
         </div>
 
         {/* Description */}
