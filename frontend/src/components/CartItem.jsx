@@ -1,10 +1,18 @@
 import { AiOutlineDelete } from "react-icons/ai";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../features/cart/cartSlice";
+import { addToCart, incQuantity, decQuantity } from "../features/cart/cartSlice";
 import { Link } from "react-router-dom";
 
 const CartItem = ({item}) => {
+    
+  const dispatch = useDispatch();
 
+  const handleDecrease = () => {
+    dispatch(decQuantity(item?.id));
+  }
+  const handleIncrease = () => {
+    dispatch(incQuantity(item?.id));
+  }
 
   return (
     <div className="w-[75vw] h-[200px] max-w-[500px] shadow-md rounded-2xl">
@@ -19,9 +27,9 @@ const CartItem = ({item}) => {
       <div className="flex flex-row gap-3 justify-center items-center">
         <span className="font-semibold">quantity:</span>
         <div className="flex flex-row gap-4 items-center">
-            <button className="border border-slate-400 w-7 bg-slate-200 rounded h-10 text-2xl hover:cursor-pointer">-</button>
+            <button onClick={handleDecrease} className="border border-slate-400 w-7 bg-slate-200 rounded h-10 text-2xl hover:cursor-pointer">-</button>
             <span>{item.quantity}</span>
-            <button className="border border-slate-400 w-7 bg-slate-200 rounded h-10 text-2xl hover:cursor-pointer">+</button>
+            <button onClick={handleIncrease} className="border border-slate-400 w-7 bg-slate-200 rounded h-10 text-2xl hover:cursor-pointer">+</button>
         </div>
       </div>
       

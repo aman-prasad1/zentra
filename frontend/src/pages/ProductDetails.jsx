@@ -29,7 +29,7 @@ const ProductDetails = () => {
 
   const handleAddToCart = () => {
     try {
-        dispatch(addToCart(productDetail?._id));
+        dispatch(addToCart(productDetail));
     } catch (error) {
         console.log(error)
     }
