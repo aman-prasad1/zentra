@@ -1,6 +1,6 @@
 import { AiOutlineDelete } from "react-icons/ai";
 import { useDispatch } from "react-redux";
-import { addToCart, incQuantity, decQuantity } from "../features/cart/cartSlice";
+import { addToCart, incQuantity, decQuantity, removeFromCart } from "../features/cart/cartSlice";
 import { Link } from "react-router-dom";
 
 const CartItem = ({item}) => {
@@ -12,6 +12,9 @@ const CartItem = ({item}) => {
   }
   const handleIncrease = () => {
     dispatch(incQuantity(item?.id));
+  }
+  const handleDelete = () => {
+    dispatch(removeFromCart(item?.id))
   }
 
   return (
@@ -34,7 +37,7 @@ const CartItem = ({item}) => {
       </div>
       
       <div className="flex justify-end px-10">
-        <button className="text-xl text-red-800 p-1 rounded-sm cursor-pointer "><AiOutlineDelete /></button>
+        <button onClick={handleDelete} className="text-xl text-red-800 p-1 rounded-sm cursor-pointer "><AiOutlineDelete /></button>
       </div>
     </div>
   );

@@ -82,6 +82,37 @@ export const decQuantity = createAsyncThunk(
     }
 )
 
+export const removeFromCart = createAsyncThunk(
+    'cart/removeFromCart',
+    (productId, { rejectWithValue }) => {
+        const cart = JSON.parse(localStorage.getItem('cart'));
+        if(cart) {
+            const itemIndex = cart.cartItems.findIndex((item) => item.id === productId);
+            if(itemIndex !== -1) {
+                cart.totalPrice -= cart.cartItems[itemIndex].price * cart.cartItems[itemIndex].quantity;
+                cart.cartItems.splice(itemIndex, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                return cart;
+            }
+            else {
+                return rejectWithValue("Itme not present in cart");
+            }
+        } else {
+            return rejectWithValue("No Items in cart");
+        }
+    }
+)
+
+export const clearCart = createAsyncThunk(
+    'cart/clearCart',
+    () => {
+        const newCart = {cartItems: [], totalPrice: 0};
+        localStorage.setItem('cart', JSON.stringify(newCart));
+
+        return newCart;
+    }
+)
+
 
 const cartSlice = createSlice(
     {
@@ -142,7 +173,30 @@ const cartSlice = createSlice(
                     state.loading = false;
                     state.error = action.payload;
                 })
+                
+                // remove from cart
+                .addCase(removeFromCart.fulfilled, (state, action) => {
+                    state.cartItems = action.payload.cartItems;
+                    state.totalPrice = action.payload.totalPrice;
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(removeFromCart.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                })
 
+                // clear cart
+                .addCase(clearCart.fulfilled, (state, action) => {
+                    state.cartItems = action.payload.cartItems;
+                    state.totalPrice = action.payload.totalPrice;
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(clearCart.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                })
         }
     }
 )
