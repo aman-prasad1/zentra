@@ -72,7 +72,6 @@ const orderSchema = new Schema({
     },
     razorpay_order_id: {
         type: String,
-        unique: true
     },
     razorpay_payment_id: {
         type: String,
