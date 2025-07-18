@@ -13,6 +13,7 @@ const ContactUs = lazy(() => import("./pages/ContactUs.jsx"));
 const Profile = lazy(() => import("./pages/Profile.jsx"));
 const ProductDetails = lazy(() => import("./pages/ProductDetails.jsx"));
 const Cart = lazy(() => import("./pages/Cart.jsx"));
+const Order = lazy(() => import('./pages/Order.jsx'));
 
 
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/products/details/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path='/order' element={<Order />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
