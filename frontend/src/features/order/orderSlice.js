@@ -25,12 +25,17 @@ const orderSlice = createSlice({
         status: 'idle',
         error: null
     },
-    addNewOrders: (state, action) => {
-        state.status = "loading";
-        for (const order of action.payload) {
-            state.newOrders.push({ id: order._id, quantity: order.quantity });
-        }
-        state.status = "idle";
+    reducers: {
+        addNewOrders: (state, action) => {
+            state.status = "loading";
+            for (const order of action.payload) {
+                state.newOrders.push({ id: order.id, quantity: order.quantity });
+            }
+            state.status = "idle";
+        },
+        clearNewOrders: (state) => {
+            state.newOrders = [];
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -39,15 +44,22 @@ const orderSlice = createSlice({
                 state.error = null
             })
             .addCase(placeOrder.fulfilled, (state, action) => {
-                state.status = 'payment',
-                console.log(action.payload);
+                if(action.payload.data.order.paymentMethod === "COD") {
+                    state.status = "success";
+                } else {
+                    state.status = "payment";
+                }
             })
             .addCase(placeOrder.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload;
-                state.newOrders = [];
             })
     }
 })
+
+export const {
+    addNewOrders,
+    clearNewOrders,
+} = orderSlice.actions;
 
 export default orderSlice.reducer;

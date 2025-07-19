@@ -3,6 +3,10 @@ import { placeOrder } from '../features/order/orderSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router";
 
+import {
+    clearNewOrders,
+} from '../features/order/orderSlice.js';
+
 const Order = () => {
 
   const dispatch = useDispatch();
@@ -19,12 +23,12 @@ const Order = () => {
 
 
   useEffect(() => {
-    if(newOrders?.length === 0) {
+    if(newOrders?.length === 0 && status === "success") {
         navigate('/cart');
     }
   },[status])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const shippingInfo = {
@@ -37,6 +41,10 @@ const Order = () => {
     }
 
     dispatch(placeOrder({shippingInfo, orderedProducts: newOrders, paymentMethod}))
+
+    if(paymentMethod === "COD" || status === "successfull") {
+        dispatch(clearNewOrders());
+    }
   } 
 
   return (
