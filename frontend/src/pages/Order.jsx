@@ -28,6 +28,12 @@ const Order = () => {
     }
   },[status])
 
+  useEffect(() => {
+    if(newOrders?.length === 0) {
+        navigate('/cart');
+    }
+  },[])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -44,6 +50,7 @@ const Order = () => {
 
     if(paymentMethod === "COD" || status === "successfull") {
         dispatch(clearNewOrders());
+        navigate('/');
     }
   } 
 

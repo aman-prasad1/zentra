@@ -33,6 +33,9 @@ const orderSlice = createSlice({
             }
             state.status = "idle";
         },
+        addSingleOrder: (state, action) => {
+            state.newOrders = [{id: action.payload[0].id, quantity: 1}];
+        },
         clearNewOrders: (state) => {
             state.newOrders = [];
         },
@@ -59,6 +62,7 @@ const orderSlice = createSlice({
 
 export const {
     addNewOrders,
+    addSingleOrder,
     clearNewOrders,
 } = orderSlice.actions;
 

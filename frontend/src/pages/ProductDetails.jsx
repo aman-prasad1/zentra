@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { getProductDetails } from '../features/product/productSlice.js';
 import { addToCart } from '../features/cart/cartSlice.js';
@@ -10,9 +11,14 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { IoIosSend } from "react-icons/io";
 
+import {
+    addSingleOrder,
+} from '../features/order/orderSlice.js';
+
 const ProductDetails = () => {
   const { id } = useParams();
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { productDetail } = useSelector((state) => state.productSlice);
   const { cartItems } = useSelector((state) => state.cartSlice);
@@ -33,6 +39,17 @@ const ProductDetails = () => {
     } catch (error) {
         console.log(error)
     }
+  }
+
+  const handleOrderNow = () => {
+    let products = [];
+
+    products.push({"id": productDetail?._id, "quantity": 1});
+
+    // adding cart products to buying list
+    dispatch(addSingleOrder(products));
+
+    navigate('/order');
   }
 
   return (
@@ -57,7 +74,7 @@ const ProductDetails = () => {
         {/* Add to cart or Buy */}
         <div className='mt-6 flex gap-3 text-white md:font-semibold'>
             <button onClick={handleAddToCart} className='px-4 py-3 flex items-center rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Add to<CiShoppingCart className='text-3xl' /></button>
-            <button disabled={productDetail?.stock <= 0} className='px-4 py-3 rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Buy Now</button>
+            <button onClick={handleOrderNow} disabled={productDetail?.stock <= 0} className='px-4 py-3 rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Buy Now</button>
         </div>
 
         {/* Description */}
