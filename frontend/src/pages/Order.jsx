@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { placeOrder } from '../features/order/orderSlice';
+import { placeOrder, verifyPayment } from '../features/order/orderSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router";
 
@@ -75,15 +75,13 @@ const Order = () => {
 
     const options = {
       key: orderPayment?.RAZORPAY_KEY_ID,
-      amount: orderPayment?.order.totalPrize, // in paise
+      amount: orderPayment?.order.totalPrize * 100,
       currency: "INR",
       name: "Zentra",
       description: "Order Payment",
       order_id: orderPayment?.order.razorpay_order_id,
       handler: async function (response) {
-        alert("payment done");
-        // TODO: payment verification
-        
+        dispatch(verifyPayment(response));
       },
       prefill: {
         name: user?.name,

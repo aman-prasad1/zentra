@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     placeOrderApi,
+    verifyPaymentApi,
 } from './orderApi.js';
 
 
@@ -9,6 +10,18 @@ export const placeOrder = createAsyncThunk(
     async (orderData, { rejectWithValue }) => {
         try {
             const res = await placeOrderApi(orderData);
+            return res;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const verifyPayment = createAsyncThunk(
+    'order/verify-payment',
+    async (paymentDetails, { rejectWithValue }) => {
+        try {
+            const res = await verifyPaymentApi(paymentDetails);
             return res;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -44,6 +57,8 @@ const orderSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+
+            // Order place
             .addCase(placeOrder.pending, (state) => {
                 state.status = 'order',
                 state.error = null
@@ -59,6 +74,22 @@ const orderSlice = createSlice({
             })
             .addCase(placeOrder.rejected, (state, action) => {
                 state.status = 'failed';
+                state.error = action.payload;
+            })
+
+            // payment verification
+            .addCase(verifyPayment.pending, (state) => {
+                state.status = "loading";
+                state.error = null;
+            })
+            .addCase(verifyPayment.fulfilled, (state, action) => {
+                state.newOrders = [];
+                state.orderPayment = null;
+                state.status = 'success';
+                state.error = null;
+            })
+            .addCase(verifyPayment.rejected, (state, action) => {
+                state.status = "failed";
                 state.error = action.payload;
             })
     }

@@ -12,3 +12,13 @@ export const placeOrderApi =  async ({shippingInfo, orderedProducts, paymentMeth
         throw new Error(message);
     }
 }
+
+export const verifyPaymentApi = async (paymentDetails) => {
+    try {
+        const res = await axios.post(`${URL}/verify-payment`, paymentDetails, {withCredentials: true});
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "Payment Verification failed";
+        throw new Error(message);
+    }
+} 
