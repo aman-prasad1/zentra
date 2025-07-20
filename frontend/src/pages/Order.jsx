@@ -37,8 +37,51 @@ const Order = () => {
 
   useEffect(() => {
     if(newOrders?.length === 0 && status === "success") {
-        navigate('/cart');
+      navigate('/cart');
     }
+    const handlePayment = async () => {
+      // Handling Payment Through razorpay
+      if(paymentMethod === "Online" && status === "payment") {
+        const isLoaded = await loadRazorpayScript();
+        if (!isLoaded) {
+          alert("Failed to load Razorpay SDK. Please check your internet.");
+          return;
+        }
+        
+        const razorpay_id = orderPayment?.RAZORPAY_KEY_ID;
+        const options = {
+          key: razorpay_id,
+          amount: orderPayment?.order.totalPrize * 100,
+          currency: "INR",
+          name: "Zentra",
+          description: "Order Payment",
+          order_id: orderPayment?.order.razorpay_order_id,
+          handler: async function (response) {
+            dispatch(verifyPayment(response));
+          },
+          prefill: {
+            name: user?.name,
+            email: user?.email,
+            contact: phone,
+          },
+          theme: {
+            color: "#528FF0",
+          },
+          method: {
+            upi: true,
+            card: true,
+            netbanking: true,
+            wallet: true,
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+      }
+    }
+
+    handlePayment();
+    
   },[status])
 
   useEffect(() => {
@@ -65,42 +108,6 @@ const Order = () => {
         dispatch(clearNewOrders());
         navigate('/');
     }
-    
-    // Handling Payment Through razorpay
-    const isLoaded = await loadRazorpayScript();
-    if (!isLoaded) {
-      alert("Failed to load Razorpay SDK. Please check your internet.");
-      return;
-    }
-
-    const options = {
-      key: orderPayment?.RAZORPAY_KEY_ID,
-      amount: orderPayment?.order.totalPrize * 100,
-      currency: "INR",
-      name: "Zentra",
-      description: "Order Payment",
-      order_id: orderPayment?.order.razorpay_order_id,
-      handler: async function (response) {
-        dispatch(verifyPayment(response));
-      },
-      prefill: {
-        name: user?.name,
-        email: user?.email,
-        contact: phone,
-      },
-      theme: {
-        color: "#528FF0",
-      },
-      method: {
-        upi: true,
-        card: true,
-        netbanking: true,
-        wallet: true,
-    }
-    };
-
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
   } 
 
   return (
@@ -167,7 +174,7 @@ const Order = () => {
             </div>
         </div>
         {(error)? <span className="left-1 mt-10 top-10 text-red-700">*{error}</span> : <></>}
-        <button className='w-fit mt-3 px-7 py-3 flex items-center rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Place Order</button>
+        <button disabled={status === "loading" || status === "pending"} className='w-fit mt-3 px-7 py-3 flex items-center rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Place Order</button>
       </form>
     </div>
   )
