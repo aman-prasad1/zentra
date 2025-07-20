@@ -21,6 +21,7 @@ const orderSlice = createSlice({
     name: 'order',
     initialState: {
         newOrders: [],
+        orderPayment: null,
         oldOrders: [],
         status: 'idle',
         error: null
@@ -28,6 +29,7 @@ const orderSlice = createSlice({
     reducers: {
         addNewOrders: (state, action) => {
             state.status = "loading";
+            state.newOrders = [];
             for (const order of action.payload) {
                 state.newOrders.push({ id: order.id, quantity: order.quantity });
             }
@@ -51,6 +53,8 @@ const orderSlice = createSlice({
                     state.status = "success";
                 } else {
                     state.status = "payment";
+                    state.orderPayment = action.payload.data;
+                    state.error = null;
                 }
             })
             .addCase(placeOrder.rejected, (state, action) => {

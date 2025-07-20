@@ -10,7 +10,8 @@ import {
 const Order = () => {
 
   const dispatch = useDispatch();
-  const { newOrders, status, error } = useSelector((state) => state.orderSlice);
+  const { newOrders, orderPayment, status, error } = useSelector((state) => state.orderSlice);
+  const { user } = useSelector((state) => state.authSlice);
   const navigate = useNavigate();
 
   const [paymentMethod, setPaymentMethod] = useState("COD");
@@ -20,6 +21,18 @@ const Order = () => {
   const [address, setAddress] = useState();
   const [phone, setPhone] = useState();
   const [pincode, setPincode] = useState();
+
+
+  // Razorpay Script loading
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
 
 
   useEffect(() => {
@@ -52,6 +65,44 @@ const Order = () => {
         dispatch(clearNewOrders());
         navigate('/');
     }
+    
+    // Handling Payment Through razorpay
+    const isLoaded = await loadRazorpayScript();
+    if (!isLoaded) {
+      alert("Failed to load Razorpay SDK. Please check your internet.");
+      return;
+    }
+
+    const options = {
+      key: orderPayment?.RAZORPAY_KEY_ID,
+      amount: orderPayment?.order.totalPrize, // in paise
+      currency: "INR",
+      name: "Zentra",
+      description: "Order Payment",
+      order_id: orderPayment?.order.razorpay_order_id,
+      handler: async function (response) {
+        alert("payment done");
+        // TODO: payment verification
+        
+      },
+      prefill: {
+        name: user?.name,
+        email: user?.email,
+        contact: phone,
+      },
+      theme: {
+        color: "#528FF0",
+      },
+      method: {
+        upi: true,
+        card: true,
+        netbanking: true,
+        wallet: true,
+    }
+    };
+
+    const razorpay = new window.Razorpay(options);
+    razorpay.open();
   } 
 
   return (
