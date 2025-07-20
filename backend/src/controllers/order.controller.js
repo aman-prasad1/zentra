@@ -108,10 +108,11 @@ const makeOrder = asyncHandler(async (req, res) => {
     }
 
     await order.save();
+    const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
     return res
         .status(200)
         .json(
-            new ApiResponse(200, "Order Created. Wating for payment", {order})
+            new ApiResponse(200, "Order Created. Wating for payment", {order, RAZORPAY_KEY_ID:RAZORPAY_KEY_ID})
         )
 })
 
