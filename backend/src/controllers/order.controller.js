@@ -126,7 +126,7 @@ const verifyOrderPayment = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Payment not verified");
     }
 
-    const order = await Order.find({razorpay_order_id: razorpay_order_id});
+    const order = await Order.findOne({razorpay_order_id: razorpay_order_id});
     order.razorpay_payment_id = razorpay_payment_id;
     order.razorpay_signature = razorpay_signature;
     order.paidAt = new Date();
