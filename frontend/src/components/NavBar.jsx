@@ -10,7 +10,7 @@ const NavBar = () => {
   const { user } = useSelector((state) => state.authSlice);
 
   return (
-    <div className="w-full h-16 fixed z-30 top-0 left-0 bg-[var(--nav-bg)] shadow px-2 sm:px-4 flex flex-row-reverse md:flex-row justify-between items-center">
+    <div className="w-full h-16 fixed z-30 top-0 left-0 bg-[var(--nav-bg)] px-2 sm:px-4 flex flex-row-reverse md:flex-row justify-between items-center">
       <div className="h-[80%] sm:h-full flex items-center">
         <div className="h-full">
           <Link to="/"><img src={Zentra} alt="Zentra" className="h-full mix-blend-color-burn" /> </Link>
