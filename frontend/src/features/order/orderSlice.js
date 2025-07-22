@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     placeOrderApi,
     verifyPaymentApi,
+    myOrdersApi,
 } from './orderApi.js';
 
 
@@ -22,6 +23,18 @@ export const verifyPayment = createAsyncThunk(
     async (paymentDetails, { rejectWithValue }) => {
         try {
             const res = await verifyPaymentApi(paymentDetails);
+            return res;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const myOrders = createAsyncThunk(
+    'order/my-order',
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await myOrdersApi();
             return res;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -90,6 +103,23 @@ const orderSlice = createSlice({
             })
             .addCase(verifyPayment.rejected, (state, action) => {
                 state.status = "failed";
+                state.error = action.payload;
+            })
+
+            // my-orders
+            .addCase(myOrders.pending, (state) => {
+                state.status = "loading";
+                state.error = null;
+                state.oldOrders = [];
+            })
+            .addCase(myOrders.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.oldOrders = action.payload.data.orders;
+                state.error = null;
+            })
+            .addCase(myOrders.rejected, (state, action) => {
+                state.status = "failed";
+                state.oldOrders = [];
                 state.error = action.payload;
             })
     }

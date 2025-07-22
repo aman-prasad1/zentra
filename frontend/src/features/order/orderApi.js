@@ -21,4 +21,14 @@ export const verifyPaymentApi = async (paymentDetails) => {
         const message = error?.response?.data?.message || "Payment Verification failed";
         throw new Error(message);
     }
-} 
+}
+
+export const myOrdersApi = async () => {
+    try {
+        const res = await axios.get(`${URL}/my-orders`, {withCredentials: true});
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "Something went wrong while fetching orders";
+        throw new Error(message);
+    }
+}
