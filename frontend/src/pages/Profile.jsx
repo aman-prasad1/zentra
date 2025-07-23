@@ -28,10 +28,10 @@ const Profile = () => {
   },[])
 
   return (
-    <div className='relative h-[91vh] md:flex'>
+    <div className='relative box-border h-[91vh] md:flex'>
       <ProfileSideBar user={auth.user} seti={seti} />
 
-      <div className="flex-1 md:block mt-15 md:mt-0 overflow-y-scroll">
+      <div className="h-full flex-1 md:block pt-15 md:pt-0 overflow-y-scroll">
         {
           i === 0 ? <DashBoard /> :
           i === 1 ? <UpdateProfile /> :

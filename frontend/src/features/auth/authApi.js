@@ -45,7 +45,7 @@ export const loginApi = async (credentials) => {
 
 export const logoutApi = async () => {
     try {
-        const res = await axios.post(`${URL}/logout`, { withCredentials: true });
+        const res = await axios.post(`${URL}/logout`, {}, { withCredentials: true });
         return res.data;
     } catch (error) {
         const message = error.response?.data?.message || "Logout Failed";
