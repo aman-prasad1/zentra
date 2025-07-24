@@ -5,6 +5,7 @@ import {
     loginApi,
     logoutApi,
     getUserApi,
+    changePasswordApi,
  } from './authApi.js';
 
 
@@ -70,6 +71,17 @@ export const refreshTokens = createAsyncThunk(
             return await refreshTokensApi();
         } catch (error) {
             return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const changePassword = createAsyncThunk(
+    'auth/change-password',
+    async(data, { rejectWithValue }) => {
+        try {
+            return await changePasswordApi(data);
+        } catch (error) {
+            rejectWithValue(error.message);
         }
     }
 )
@@ -162,6 +174,19 @@ const authSlice = createSlice(
                 })
                 .addCase(getUser.rejected, (state, action) => {
                     state.status = "idle";
+                })
+
+                // change-password
+                .addCase(changePassword.pending, (state) => {
+                    state.error = null;
+                    state.status = 'loading';
+                })
+                .addCase(changePassword.fulfilled, (state) => {
+                    state.status = 'successfull';
+                })
+                .addCase(changePassword.rejected, (state, action) => {
+                    state.status = 'failed';
+                    state.error = action.payload;
                 })
         }
     },

@@ -69,3 +69,13 @@ export const getUserApi = async () => {
         }
     }
 }
+
+export const changePasswordApi = async (data) => {
+    try {
+        const res = await axios.put(`${URL}/change-password`, {data}, {withCredentials: true});
+        return res.data;
+    } catch (error) {
+        const message = error.message || "Something went wrong";
+        throw new Error(message);
+    }
+}
