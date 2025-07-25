@@ -81,7 +81,7 @@ export const changePassword = createAsyncThunk(
         try {
             return await changePasswordApi(data);
         } catch (error) {
-            rejectWithValue(error.message);
+            return rejectWithValue(error.message);
         }
     }
 )
@@ -182,7 +182,7 @@ const authSlice = createSlice(
                     state.status = 'loading';
                 })
                 .addCase(changePassword.fulfilled, (state) => {
-                    state.status = 'successfull';
+                    state.status = 'succeeded';
                 })
                 .addCase(changePassword.rejected, (state, action) => {
                     state.status = 'failed';
