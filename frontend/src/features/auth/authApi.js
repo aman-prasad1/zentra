@@ -79,3 +79,13 @@ export const changePasswordApi = async (data) => {
         throw new Error(message);
     }
 }
+
+export const deleteAccountApi = async (password) => {
+    try {
+        const res = await axios.delete(`${URL}/delete-profile`, password, {withCredentials: true});
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "Profile not deleted";
+        throw new Error(message);
+    }
+}

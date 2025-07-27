@@ -6,6 +6,7 @@ import {
     logoutApi,
     getUserApi,
     changePasswordApi,
+    deleteAccountApi,
  } from './authApi.js';
 
 
@@ -80,6 +81,17 @@ export const changePassword = createAsyncThunk(
     async(data, { rejectWithValue }) => {
         try {
             return await changePasswordApi(data);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const deleteAccount = createAsyncThunk(
+    'auth/delete-account',
+    async(password, { rejectWithValue }) => {
+        try {
+            return await deleteAccountApi(password);
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -185,6 +197,21 @@ const authSlice = createSlice(
                     state.status = 'succeeded';
                 })
                 .addCase(changePassword.rejected, (state, action) => {
+                    state.status = 'failed';
+                    state.error = action.payload;
+                })
+
+                // delete-account
+                .addCase(deleteAccount.pending, (state) => {
+                    state.status = 'loading';
+                    state.error = null;
+                })
+                .addCase(deleteAccount.fulfilled, (state) => {
+                    state.status = 'idle';
+                    state.user = null;
+                    state.error = null;
+                })
+                .addCase(deleteAccount.rejected, (state, action) => {
                     state.status = 'failed';
                     state.error = action.payload;
                 })
