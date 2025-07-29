@@ -100,7 +100,7 @@ export const deleteAccount = createAsyncThunk(
 )
 
 export const updateProfile = createAsyncThunk(
-    'auth/signup',
+    'user/update-profile',
     async (data, { rejectWithValue }) => {
         try {
             return await updateProfileApi(data);
