@@ -7,6 +7,7 @@ import {
     getUserApi,
     changePasswordApi,
     deleteAccountApi,
+    updateProfileApi,
  } from './authApi.js';
 
 
@@ -97,6 +98,17 @@ export const deleteAccount = createAsyncThunk(
         }
     }
 )
+
+export const updateProfile = createAsyncThunk(
+    'auth/signup',
+    async (data, { rejectWithValue }) => {
+        try {
+            return await updateProfileApi(data);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
 const authSlice = createSlice(
     {
@@ -212,6 +224,20 @@ const authSlice = createSlice(
                     state.error = null;
                 })
                 .addCase(deleteAccount.rejected, (state, action) => {
+                    state.status = 'failed';
+                    state.error = action.payload;
+                })
+
+                // update profile
+                .addCase(updateProfile.pending, (state) => {
+                    state.status = 'loading';
+                    state.error = null;
+                })
+                .addCase(updateProfile.fulfilled, (state, action) => {
+                    state.status = 'idle',
+                    state.user = action.payload.data.user;
+                })
+                .addCase(updateProfile.rejected, (state, action) => {
                     state.status = 'failed';
                     state.error = action.payload;
                 })

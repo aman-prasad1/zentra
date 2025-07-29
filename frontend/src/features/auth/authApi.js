@@ -89,3 +89,21 @@ export const deleteAccountApi = async (password) => {
         throw new Error(message);
     }
 }
+
+export const updateProfileApi = async (data) => {
+    try {
+        const res = await axios.post(
+            `${URL}/update-profile`,
+            data,
+            {
+                headers: {'Content-Type': 'multipart/form-data'}
+            }
+        );
+        return res.data;
+
+    } catch (error) {
+        const message = error.response?.data?.message || "Something went wrong while updating profile";
+
+        throw new Error(message);
+    }
+}
