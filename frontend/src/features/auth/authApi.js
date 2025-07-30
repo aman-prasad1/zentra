@@ -92,11 +92,12 @@ export const deleteAccountApi = async (password) => {
 
 export const updateProfileApi = async (data) => {
     try {
-        const res = await axios.post(
+        const res = await axios.put(
             `${URL}/update-profile`,
             data,
             {
-                headers: {'Content-Type': 'multipart/form-data'}
+                headers: {'Content-Type': 'multipart/form-data'},
+                withCredentials: true
             }
         );
         return res.data;
