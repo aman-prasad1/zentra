@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
     getAllUserApi,
     getSingleUserApi,
+    deleteUserApi,
 } from '../admin/adminApi.js';
 
 
@@ -21,6 +22,17 @@ export const getSingleUser = createAsyncThunk(
     async(id, { rejectWithValue }) => {
         try {
             return await getSingleUserApi(id);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const deleteUser = createAsyncThunk(
+    'admin/delete-user',
+    async(id, { rejectWithValue }) => {
+        try {
+            return await deleteUser(id);
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -72,6 +84,20 @@ const adminSlice = createSlice(
                 })
                 .addCase(getSingleUser.rejected, (state, action) => {
                     state.singleUser = null;
+                    state.loading = false;
+                    state.error = action.payload;
+                })
+
+                // delete-user
+                .addCase(deleteUser.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+                })
+                .addCase(deleteUser.fulfilled, (state) => {
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(deleteUser.rejected, (state, action) => {
                     state.loading = false;
                     state.error = action.payload;
                 })

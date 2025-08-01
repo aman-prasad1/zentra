@@ -23,3 +23,13 @@ export const getSingleUserApi = async (id) => {
         throw new Error(message);
     }
 }
+
+export const deleteUserApi = async (id) => {
+    try {
+        const res = await axios.delete(`${URL}/user/${id}`, {withCredentials: true});
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "Something went wrong while deleting user";
+        throw new Error(message);
+    }
+}
