@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
     getAllUserApi,
+    getSingleUserApi,
 } from '../admin/adminApi.js';
 
 
@@ -15,11 +16,23 @@ export const getAllUser = createAsyncThunk(
     }
 )
 
+export const getSingleUser = createAsyncThunk(
+    'admin/user/id',
+    async(id, { rejectWithValue }) => {
+        try {
+            return await getSingleUserApi(id);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
 const adminSlice = createSlice(
     {
         name: 'admin',
         initialState: {
             users: [],
+            singleUser: null,
             loading: false,
             error: null
         },
@@ -42,6 +55,23 @@ const adminSlice = createSlice(
                 })
                 .addCase(getAllUser.rejected, (state, action) => {
                     state.users = [];
+                    state.loading = false;
+                    state.error = action.payload;
+                })
+
+                // get-single-user
+                .addCase(getSingleUser.pending, (state) => {
+                    state.singleUser = null;
+                    state.loading = true;
+                    state.error = null;
+                })
+                .addCase(getSingleUser.fulfilled, (state, action) => {
+                    state.singleUser = action.payload.data.user;
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(getSingleUser.rejected, (state, action) => {
+                    state.singleUser = null;
                     state.loading = false;
                     state.error = action.payload;
                 })
