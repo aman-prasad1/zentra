@@ -3,6 +3,7 @@ import {
     getAllUserApi,
     getSingleUserApi,
     deleteUserApi,
+    updateRoleApi,
 } from '../admin/adminApi.js';
 
 
@@ -32,7 +33,18 @@ export const deleteUser = createAsyncThunk(
     'admin/delete-user',
     async(id, { rejectWithValue }) => {
         try {
-            return await deleteUser(id);
+            return await deleteUserApi(id);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const updateRole = createAsyncThunk(
+    'admin/update-role',
+    async(data, { rejectWithValue }) => {
+        try {
+            return await updateRoleApi(data);
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -98,6 +110,20 @@ const adminSlice = createSlice(
                     state.error = null;
                 })
                 .addCase(deleteUser.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                })
+
+                // update-role
+                .addCase(updateRole.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+                })
+                .addCase(updateRole.fulfilled, (state) => {
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(updateRole.rejected, (state, action) => {
                     state.loading = false;
                     state.error = action.payload;
                 })

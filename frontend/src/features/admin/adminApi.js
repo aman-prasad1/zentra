@@ -33,3 +33,13 @@ export const deleteUserApi = async (id) => {
         throw new Error(message);
     }
 }
+
+export const updateRoleApi = async (data) => {
+    try {
+        const res = await axios.put(`${URL}/user/${data.id}`, {newRole: data.newRole}, {withCredentials: true});
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "something went wrong while updating user";
+        throw new Error(message);
+    }
+}
