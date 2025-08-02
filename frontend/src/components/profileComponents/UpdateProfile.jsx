@@ -38,10 +38,12 @@ const UpdateProfile = () => {
 
   return (
     <div className="p-5 flex flex-col items-center">
-      <div className="h-[140px] w-[140px] flex justify-center relative z-0 border rounded-full overflow-hidden">
+      <div className="h-[140px] w-[140px] flex justify-center relative z-0 border rounded-full">
         <input type="file" accept="image/*" onChange={(e) => handleAvatarChange(e)} className=" absolute z-30 min-h-[130px] min-w-[130px] rounded-full overflow-hidden opacity-0"/>
-        <img src={avatarPreview || user?.avatar?.public_url} alt="User" className="h-full" />
-        <div className="absolute z-20 w-[15%] h-[15%] bg-slate-800 flex justify-center items-center text-slate-200 bottom-3 right-4 border rounded-full">
+        <div className="w-full h-full rounded-full overflow-hidden">
+          <img src={avatarPreview || user?.avatar?.public_url} alt="User" className="h-full" />
+        </div>
+        <div className="absolute z-40 w-[15%] h-[15%] bg-slate-800 flex justify-center items-center text-slate-200 bottom-3 right-4 border rounded-full">
           <IoPencilSharp  />
         </div>
       </div>
