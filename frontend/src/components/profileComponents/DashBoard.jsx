@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+import ViewOrders from "../dashboardComp/ViewOrders";
+import ViewUsers from "../dashboardComp/ViewUsers";
+import ViewProducts from "../dashboardComp/ViewProducts";
+
 const DashBoard = () => {
   const [section, setSection] = useState("dashboard");
 
@@ -11,11 +15,11 @@ const DashBoard = () => {
   const renderSection = () => {
     switch (section) {
       case "viewUsers":
-        return <div className="p-4">👥 All Users Component</div>;
+        return <ViewUsers />;
       case "viewProducts":
-        return <div className="p-4">📦 All Products Component</div>;
+        return <ViewProducts />;
       case "viewOrders":
-        return <div className="p-4">🧾 All Orders Component</div>;
+        return <ViewOrders />;
       case "dashboard":
       default:
         return (
