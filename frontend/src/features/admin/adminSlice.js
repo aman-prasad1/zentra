@@ -4,6 +4,8 @@ import {
     getSingleUserApi,
     deleteUserApi,
     updateRoleApi,
+    getAllProductsApi,
+    deleteProductApi,
 } from '../admin/adminApi.js';
 
 
@@ -51,11 +53,34 @@ export const updateRole = createAsyncThunk(
     }
 )
 
+export const getAllProducts = createAsyncThunk(
+    'admin/all-products',
+    async(_, { rejectWithValue }) => {
+        try {
+            return await getAllProductsApi();
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const deleteProduct = createAsyncThunk(
+    'admin/delete-product',
+    async(id, { rejectWithValue }) => {
+        try {
+            return await deleteProductApi(id);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
 const adminSlice = createSlice(
     {
         name: 'admin',
         initialState: {
             users: [],
+            products: [],
             singleUser: null,
             loading: false,
             error: null
@@ -124,6 +149,37 @@ const adminSlice = createSlice(
                     state.error = null;
                 })
                 .addCase(updateRole.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                })
+
+                // get-all-products
+                .addCase(getAllProducts.pending, (state) => {
+                    state.products = [];
+                    state.loading = true;
+                    state.error = null;
+                })
+                .addCase(getAllProducts.fulfilled, (state, action) => {
+                    state.products = action.payload.data.products;
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(getAllProducts.rejected, (state, action) => {
+                    state.products = [];
+                    state.loading = false;
+                    state.error = action.payload;
+                })
+
+                // delete-product
+                .addCase(deleteProduct.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+                })
+                .addCase(deleteProduct.fulfilled, (state) => {
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(deleteProduct.rejected, (state, action) => {
                     state.loading = false;
                     state.error = action.payload;
                 })

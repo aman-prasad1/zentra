@@ -2,6 +2,7 @@ import axios from 'axios';
 
 
 const URL = "http://localhost:8000/api/v1/user/admin";
+const PRODUCT_URL = "http://localhost:8000/api/v1/product";
 
 
 export const getAllUserApi = async () => {
@@ -40,6 +41,26 @@ export const updateRoleApi = async (data) => {
         return res.data;
     } catch (error) {
         const message = error?.response?.data?.message || "something went wrong while updating user";
+        throw new Error(message);
+    }
+}
+
+export const getAllProductsApi = async () => {
+    try {
+        const res = await axios.get(`${PRODUCT_URL}/admin-products`, {withCredentials: true});
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "Something went wrong while finding all products";
+        throw new Error(message);
+    }
+}
+
+export const deleteProductApi = async (id) => {
+    try {
+        const res = await axios.delete(`${PRODUCT_URL}/delete/${id}`, {withCredentials: true});
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "Something went wrong while deleting product";
         throw new Error(message);
     }
 }
