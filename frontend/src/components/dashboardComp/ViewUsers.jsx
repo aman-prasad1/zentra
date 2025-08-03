@@ -13,6 +13,10 @@ const ViewUsers = () => {
   const { users, loading, error } = useSelector((state) => state.adminSlice);
 
 
+  useEffect(() => {
+    dispatch(getAllUser());
+  }, [dispatch]);
+
 
   const onRoleChange = (id, newRole) => {
     dispatch(updateRole({ id, newRole }));
