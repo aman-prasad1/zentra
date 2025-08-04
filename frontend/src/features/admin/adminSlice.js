@@ -6,6 +6,7 @@ import {
     updateRoleApi,
     getAllProductsApi,
     deleteProductApi,
+    createProductApi,
 } from '../admin/adminApi.js';
 
 
@@ -69,6 +70,17 @@ export const deleteProduct = createAsyncThunk(
     async(id, { rejectWithValue }) => {
         try {
             return await deleteProductApi(id);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const createProduct = createAsyncThunk(
+    'admin/new-product',
+    async(data, { rejectWithValue }) => {
+        try {
+            return await createProductApi(data);
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -183,6 +195,20 @@ const adminSlice = createSlice(
                     state.loading = false;
                     state.error = action.payload;
                 })
+
+                // create-product
+                .addCase(createProduct.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+                })
+                .addCase(createProduct.fulfilled, (state) => {
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(createProduct.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                });
         }
     }
 )

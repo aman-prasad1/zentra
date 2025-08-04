@@ -64,3 +64,20 @@ export const deleteProductApi = async (id) => {
         throw new Error(message);
     }
 }
+
+export const createProductApi = async (data) => {
+    try {
+        const res = await axios.post(
+            `${PRODUCT_URL}/new-prouduct`,
+            data,
+            {
+                headers: {'Content-Type': 'multipart/form-data'},
+                withCredentials: true
+            }
+        );
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "Something went wrong while adding new product";
+        throw new Error(message);
+    }
+}
