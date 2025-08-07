@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const URL = "http://localhost:8000/api/v1/user/admin";
 const PRODUCT_URL = "http://localhost:8000/api/v1/product";
+const ORDER_URL = "http://localhost:8000/api/v1/order";
 
 
 export const getAllUserApi = async () => {
@@ -78,6 +79,16 @@ export const createProductApi = async (data) => {
         return res.data;
     } catch (error) {
         const message = error?.response?.data?.message || "Something went wrong while adding new product";
+        throw new Error(message);
+    }
+}
+
+export const getAllOrdersApi = async () => {
+    try {
+        const res = await axios.get(`${ORDER_URL}/all-orders`, {withCredentials: true});
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "Something went wrong while finding all orders";
         throw new Error(message);
     }
 }

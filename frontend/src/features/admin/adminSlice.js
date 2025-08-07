@@ -7,6 +7,7 @@ import {
     getAllProductsApi,
     deleteProductApi,
     createProductApi,
+    getAllOrdersApi,
 } from '../admin/adminApi.js';
 
 
@@ -87,12 +88,24 @@ export const createProduct = createAsyncThunk(
     }
 )
 
+export const getAllOrders = createAsyncThunk(
+    'admin/all-orders',
+    async(_, { rejectWithValue }) => {
+        try {
+            return await getAllOrdersApi();
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
 const adminSlice = createSlice(
     {
         name: 'admin',
         initialState: {
             users: [],
             products: [],
+            orders: [],
             singleUser: null,
             loading: false,
             error: null
@@ -208,7 +221,24 @@ const adminSlice = createSlice(
                 .addCase(createProduct.rejected, (state, action) => {
                     state.loading = false;
                     state.error = action.payload;
-                });
+                })
+
+                // get-all-orders
+                .addCase(getAllOrders.pending, (state) => {
+                    state.orders = [];
+                    state.loading = true;
+                    state.error = null;
+                })
+                .addCase(getAllOrders.fulfilled, (state, action) => {
+                    state.orders = action.payload.data.orders;
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(getAllOrders.rejected, (state, action) => {
+                    state.orders = [];
+                    state.loading = false;
+                    state.error = action.payload;
+                })
         }
     }
 )
