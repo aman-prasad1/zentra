@@ -92,3 +92,17 @@ export const getAllOrdersApi = async () => {
         throw new Error(message);
     }
 }
+
+export const updateOrderStatusApi = async (data) => {
+    try {
+        const res = await axios.put(
+            `${ORDER_URL}/update-order/${data.orderId}`,
+            {orderStatus: data.orderStatus},
+            {withCredentials: true}
+        );
+        return res.data;
+    } catch (error) {
+        const message = error?.response?.data?.message || "Something went wrong while updating order status";
+        throw new Error(message);
+    }
+}

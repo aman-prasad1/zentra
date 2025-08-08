@@ -8,6 +8,7 @@ import {
     deleteProductApi,
     createProductApi,
     getAllOrdersApi,
+    updateOrderStatusApi,
 } from '../admin/adminApi.js';
 
 
@@ -93,6 +94,17 @@ export const getAllOrders = createAsyncThunk(
     async(_, { rejectWithValue }) => {
         try {
             return await getAllOrdersApi();
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const updateOrderStatus = createAsyncThunk(
+    'admin/update-order-status',
+    async({ orderId, orderStatus }, { rejectWithValue }) => {
+        try {
+            return await updateOrderStatusApi({ orderId, orderStatus });
         } catch (error) {
             return rejectWithValue(error.message);
         }
