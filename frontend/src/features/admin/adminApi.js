@@ -69,7 +69,7 @@ export const deleteProductApi = async (id) => {
 export const createProductApi = async (data) => {
     try {
         const res = await axios.post(
-            `${PRODUCT_URL}/new-prouduct`,
+            `${PRODUCT_URL}/new-product`,
             data,
             {
                 headers: {'Content-Type': 'multipart/form-data'},

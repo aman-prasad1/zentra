@@ -3,6 +3,7 @@ import { useState } from "react";
 import ViewOrders from "../dashboardComp/ViewOrders";
 import ViewUsers from "../dashboardComp/ViewUsers";
 import ViewProducts from "../dashboardComp/ViewProducts";
+import AddProduct from "../dashboardComp/AddProduct";
 
 const DashBoard = () => {
   const [section, setSection] = useState("dashboard");
@@ -20,6 +21,8 @@ const DashBoard = () => {
         return <ViewProducts />;
       case "viewOrders":
         return <ViewOrders />;
+      case "addProduct":
+        return <AddProduct />;
       case "dashboard":
       default:
         return (
@@ -41,6 +44,12 @@ const DashBoard = () => {
               onClick={() => setSection("viewOrders")}
             >
               🧾 View All Orders
+            </div>
+            <div
+              className="cursor-pointer p-6 bg-white shadow hover:shadow-lg rounded-xl"
+              onClick={() => setSection("addProduct")}
+            >
+              ➕ Add New Product
             </div>
           </div>
         );
