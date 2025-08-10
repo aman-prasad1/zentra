@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     getProductsApi,
     getProductDetailsApi,
+    addReviewApi,
 } from './productApi.js';
 
 
@@ -21,6 +22,17 @@ export const getProductDetails = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             return await getProductDetailsApi(data);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const addReview = createAsyncThunk(
+    'product/addReview',
+    async (data, { rejectWithValue }) => {
+        try {
+            return await addReviewApi(data);
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -78,6 +90,20 @@ const productSlice = createSlice(
                     state.loading = false;
                     state.error = action.payload;
                 })
+
+                // add review
+                .addCase(addReview.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+                })
+                .addCase(addReview.fulfilled, (state) => {
+                    state.loading = false;
+                    state.error = null;
+                })
+                .addCase(addReview.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload || "Failed to add review";
+                });
         }
     }
 )

@@ -32,3 +32,15 @@ export const getProductDetailsApi = async (data) => {
         throw new Error(message);
     }
 }
+
+export const addReviewApi = async (data) => {
+    try {
+        const res = await axios.post(`${URL}/review/`, data, {
+            withCredentials: true
+        });
+        return res.data;
+    } catch (error) {
+        const message = error.response?.data?.message || "Error while adding review";
+        throw new Error(message);
+    }
+}
