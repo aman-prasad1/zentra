@@ -10,7 +10,9 @@ import { CiShoppingCart } from "react-icons/ci";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { IoIosSend } from "react-icons/io";
+import Star from "../assets/star.svg";
 
+import { addReview } from '../features/product/productSlice.js';
 import {
     addSingleOrder,
 } from '../features/order/orderSlice.js';
@@ -21,10 +23,12 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { productDetail } = useSelector((state) => state.productSlice);
-  const { cartItems } = useSelector((state) => state.cartSlice);
 
-  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(true);
   const [isDescOpen, setIsDescOpen] = useState(true);
+
+  const [newReview, setNewReview] = useState("");
+  const [newRating, setNewRating] = useState(0);
 
   const reviews = productDetail?.reviews;
 
@@ -34,11 +38,7 @@ const ProductDetails = () => {
 
 
   const handleAddToCart = () => {
-    try {
-        dispatch(addToCart(productDetail));
-    } catch (error) {
-        console.log(error)
-    }
+    dispatch(addToCart(productDetail));
   }
 
   const handleOrderNow = () => {
@@ -51,6 +51,22 @@ const ProductDetails = () => {
 
     navigate('/order');
   }
+
+  const handleAddReview = () => {
+    if (newReview && newRating) {
+      const reviewData = {
+        productId: productDetail?._id,
+        comment: newReview,
+        rating: newRating,
+      };
+      dispatch(addReview(reviewData))
+      .then(() => {
+        setNewReview("");
+        setNewRating(0);
+        dispatch(getProductDetails({id}));
+      });
+    }
+  };
 
   return (
     <div className='w-full flex flex-col md:flex-row items-center md:items-start'>
@@ -89,15 +105,24 @@ const ProductDetails = () => {
 
         {/* Add Review */}
         <div className='mt-8'>
+            <div className="pl-3 flex gap-2 text-4xl">
+                <img src={Star} onClick={() => setNewRating(1)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 1)? "filter-amber-700" : "filter-slate-500"}`} />
+                <img src={Star} onClick={() => setNewRating(2)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 2)? "filter-amber-700" : "filter-slate-500"}`} />
+                <img src={Star} onClick={() => setNewRating(3)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 3)? "filter-amber-700" : "filter-slate-500"}`} />
+                <img src={Star} onClick={() => setNewRating(4)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 4)? "filter-amber-700" : "filter-slate-500"}`} />
+                <img src={Star} onClick={() => setNewRating(5)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 5)? "filter-amber-700" : "filter-slate-500"}`} />
+            </div>
             <div className='mt-3 relative w-[70%]'>
                 <input 
                     type="text"
                     spellCheck={false}
-                    autoCapitalize='off' 
+                    autoComplete='off'
+                    onChange={(e) => setNewReview(e.target.value)}
+                    value={newReview}
                     placeholder='Write you comment'
                     className='border border-slate-600 w-full h-10 p-4 pr-8 outline-none rounded-2xl' 
                 />
-                <button className='absolute top-0 right-4 flex items-center h-full hover:cursor-pointer'>
+                <button onClick={handleAddReview} className='absolute top-0 right-4 flex items-center h-full hover:cursor-pointer'>
                     <IoIosSend  />
                 </button>
             </div>
