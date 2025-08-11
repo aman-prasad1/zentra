@@ -1,18 +1,20 @@
 import multer from 'multer';
 import path from 'path';
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "./public")
-    },
-    filename: function (req, file, cb) {
-        const ext = path.extname(file.originalname); // get extension (.jpg, .png)
-        const baseName = path.basename(file.originalname, ext); // original filename without extension
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-        cb(null, `${baseName}-${uniqueSuffix}${ext}`);
-    }
-})
+// Use memory storage for serverless environments
+const storage = multer.memoryStorage();
 
 export const upload = multer({
-    storage
+    storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: function (req, file, cb) {
+        // Accept only image files
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed!'), false);
+        }
+    }
 })

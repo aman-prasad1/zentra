@@ -164,7 +164,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
         const images = []; // for product images
         for(const image of req.files['product-images']) {
-            const uploadImage = await uploadOnCloudinary(image.path);
+            const uploadImage = await uploadOnCloudinary(image);
             images.push({
                 public_id: uploadImage.public_id,
                 public_url: uploadImage.url
@@ -268,7 +268,7 @@ const updateProduct = asyncHandler(async (req, res) => {
             
             // uploading new images
             for(const image of req.files['product-images']) {
-                const uploadedImage = await uploadOnCloudinary(image.path);
+                const uploadedImage = await uploadOnCloudinary(image);
                 newImages.push({
                     public_id: uploadedImage.public_id,
                     public_url: uploadedImage.url

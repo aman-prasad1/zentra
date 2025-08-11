@@ -28,21 +28,19 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // extracting name, email, password and confirmPassword from requres body
     const { name, email, password, confirmPassword } = req.body;
-    const avatarLocalPath = req.file?.path;
+    const avatarFile = req.file; // Now we get the file object instead of path
 
 
-    // if any fields are missing, remove saved avatar and throw an error
+    // if any fields are missing, throw an error
     if ([name, email, password, confirmPassword].some((field) => !field || field?.trim() === "")) {
-        fs.unlink(avatarLocalPath, (error) => {});
         throw new ApiError(400, "All fields are required");
     }
 
     if(password != confirmPassword) {
-        fs.unlink(avatarLocalPath, (error) => {});
         throw new ApiError(400, "Confirm Passwrod and Password should be same");
     }
 
-    if (!avatarLocalPath) {
+    if (!avatarFile) {
         throw new ApiError(400, "Avatar is required");
     }
 
@@ -54,7 +52,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // if user already exists and verified
     if (existedUser && existedUser.isVerified === true) {
-        fs.unlink(avatarLocalPath, (error) => {});
         throw new ApiError(400, "User with this email already exists");
     }
 
@@ -71,7 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
             await deleteFromCloudinary(existedUser.avatar.public_id);
 
-            const avatar = await uploadOnCloudinary(avatarLocalPath); // upload avatar on cloudinary
+            const avatar = await uploadOnCloudinary(avatarFile); // upload avatar on cloudinary
             existedUser.avatar.public_url = avatar.url;
             existedUser.avatar.public_id = avatar.public_id;
 
@@ -91,13 +88,12 @@ const registerUser = asyncHandler(async (req, res) => {
                 )
             }
         } else { // if verify code is not expired, throw error 
-            fs.unlink(avatarLocalPath, (error) => {});
             throw new ApiError(400, "Try again after some time");
         }
     }
 
     // user does not exisits
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const avatar = await uploadOnCloudinary(avatarFile);
     
     const user = new User({
         name: name,
@@ -368,17 +364,16 @@ const getUserDetails = asyncHandler(async (req, res) => {
 
 const updateProfile = asyncHandler(async (req, res) => {
     const { name } = req.body;
-    const avatarLocalPath = req.file?.path;
+    const avatarFile = req.file;
 
-    if(!name && !avatarLocalPath) {
-        fs.unlink(avatarLocalPath, (error) => {});
+    if(!name && !avatarFile) {
         throw new ApiError(400, "Update fields are required");
     }
 
     const user = await User.findById(req.user._id).select("-password -refreshToken -verifyCode -verifyCodeExpiry -resetPasswordToken -resetPasswordTokenExpire");
 
     // if avatar is not requested to change
-    if(!avatarLocalPath) {
+    if(!avatarFile) {
         user.name = name;
         await user.save();
 
@@ -390,10 +385,9 @@ const updateProfile = asyncHandler(async (req, res) => {
     }
 
     // if avatar is requested to change.
-    const newAvatar = await uploadOnCloudinary(avatarLocalPath);
+    const newAvatar = await uploadOnCloudinary(avatarFile);
 
     if(!newAvatar) {
-        fs.unlink(avatarLocalPath, (error) => {});
         throw new ApiError(400, "Something went wrong while updating profile picture");
     }
     
