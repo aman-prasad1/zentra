@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URL = "http://localhost:8000/api/v1/order";
+const URL = "https://zentra-peach.vercel.app/api/v1/order";
 
 
 export const placeOrderApi =  async ({shippingInfo, orderedProducts, paymentMethod}) => {

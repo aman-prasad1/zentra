@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const URL = "http://localhost:8000/api/v1/user";
+const URL = "https://zentra-peach.vercel.app/api/v1/user";
 
 export const signUpApi = async (data) => {
     try {

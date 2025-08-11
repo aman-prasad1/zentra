@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URL = "http://localhost:8000/api/v1";
+const URL = "https://zentra-peach.vercel.app/api/v1";
 
 
 export const addToCartApi = async (productDetail) => {
