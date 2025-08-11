@@ -14,7 +14,7 @@ app.use(cors({
             process.env.CORS_ORIGIN,
             'http://localhost:3000',
             'http://localhost:5173',
-            'https://zentra-frontend.vercel.app', // Add your actual frontend domain
+            'https://zentra-commerce.vercel.app',
             'https://zentra-peach.vercel.app'
         ].filter(Boolean);
         
