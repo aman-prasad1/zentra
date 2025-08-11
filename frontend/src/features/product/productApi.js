@@ -1,6 +1,7 @@
 import axios from "axios";
+import { BASE_URL } from '../../config/api.js';
 
-const URL = "https://zentra-peach.vercel.app/api/v1/product";
+const URL = `${BASE_URL}/product`;
 
 export const getProductsApi = async (data) => {
     try {

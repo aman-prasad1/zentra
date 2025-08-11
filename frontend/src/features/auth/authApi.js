@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { BASE_URL } from '../../config/api.js';
 
-
-const URL = "https://zentra-peach.vercel.app/api/v1/user";
+const URL = `${BASE_URL}/user`;
 
 export const signUpApi = async (data) => {
     try {
