@@ -18,7 +18,7 @@ const CartItem = ({item}) => {
   }
 
   return (
-    <div className="w-[75vw] h-[200px] max-w-[500px] shadow-md rounded-2xl">
+    <div className="w-[75vw] h-50 max-w-125 shadow-md rounded-2xl">
       <Link to={`/products/details/${item.id}`} className="h-1/2 w-full flex gap-2 p-2 hover:text-amber-800 transition-all">
         <div className="w-fit overflow-hidden">
             <img src={item.image} alt="" className="h-full rounded-2xl"/>

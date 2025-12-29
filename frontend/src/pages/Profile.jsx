@@ -28,7 +28,7 @@ const Profile = () => {
   },[])
 
   return (
-    <div className='relative box-border h-[91vh] md:flex'>
+    <div className='relative box-border h-screen md:flex'>
       <ProfileSideBar user={auth.user} seti={seti} />
 
       <div className="h-full flex-1 md:block pt-15 md:pt-0 overflow-y-scroll">

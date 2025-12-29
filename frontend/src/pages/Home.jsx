@@ -41,7 +41,7 @@ const Home = () => {
   }, [text, isDeleting, messageIndex]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-purple-600 to-indigo-700 text-white flex flex-col-reverse md:flex-row items-center justify-center p-6 md:p-16 gap-12">
+    <div className="min-h-screen absolut bg-linear-to-r from-purple-600 to-indigo-700 text-white flex flex-col-reverse md:flex-row items-center justify-center p-6 md:p-16 gap-12">
       
       {/* Left Content */}
       <div className="flex-1 text-center md:text-left">

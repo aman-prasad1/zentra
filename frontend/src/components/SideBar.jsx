@@ -19,7 +19,7 @@ const SideBar = () => {
       {(isOpen)? 
         (<div className="relative">
         <IoCloseSharp onClick={handleChange} className="text-2xl" />
-        <div onClick={handleChange} className="absolute flex flex-col items-start left-[-1rem] sm:left-[-2rem] top-11 z-30 h-screen w-[80vw] bg-[var(--sidebar-bg)] shadow-2xl">
+        <div onClick={handleChange} className="absolute flex flex-col items-start -left-4 sm:-left-8 top-11 z-30 h-screen w-[80vw] bg-(--sidebar-bg) shadow-2xl">
             {(user)? <Link className="w-full h-16 text-center border-b border-slate-400 p-4" to="/profile" >Profile</Link> : <Link className="w-full h-16 text-center border-b border-slate-400 p-4" to="/login" >Login</Link>}
             <Link className="w-full h-16 text-center border-b border-slate-400 p-4" to="/" >Home</Link>
             <Link className="w-full h-16 text-center border-b border-slate-400 p-4" to="/products" >Products</Link>

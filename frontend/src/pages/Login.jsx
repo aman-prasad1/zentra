@@ -4,6 +4,7 @@ import { GoEye, GoEyeClosed } from "react-icons/go";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router";
 import { loginUser } from "../features/auth/authSlice";
+import Loader from "../components/Loader";
 
 const SignUp = () => {
 
@@ -45,50 +46,53 @@ const SignUp = () => {
   }, [])
 
   return (
-    <div ref={mainRef} className="h-screen w-screen relative flex justify-center items-center">
-      <form onSubmit={handleSubmit} className="w-11/12 p-4 sm:max-w-[500px] box-border flex flex-col gap-3 rounded-2xl shadow-2xl">
-        <h2 className="text-center text-4xl font-semibold">Login</h2>
+    <div className="relative">
+      {status === "loading"? <Loader className="absolute z-20 m-20" /> : <div className="h-12"></div>}
+      <div ref={mainRef} className="absolute z-10 pt-10 w-screen flex flex-row justify-center items-center">
+        <form onSubmit={handleSubmit} className="w-11/12 p-4 sm:max-w-125 box-border flex flex-col gap-3 rounded-2xl shadow-2xl">
+          <h2 className="text-center text-4xl font-semibold">Login</h2>
 
-        <div className="flex flex-col items-center gap-y-8 mt-5">
-          <input
-            name="email"
-            autoComplete="off"
-            type="text"
-            className="border-b w-10/12 h-10 p-3 outline-none hover:scale-105 transition-all font-light"
-            placeholder="Email"
-            spellCheck={false}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <div className="border-b w-10/12 h-10 p-3 relative hover:scale-105 transition-all">
+          <div className="flex flex-col items-center gap-y-8 mt-5">
             <input
-              name="password"
-              type={`${showPass ? "text" : "password"}`}
-              className=" outline-none w-full font-light"
-              placeholder="Password"
+              name="email"
+              autoComplete="off"
+              type="text"
+              className="border-b w-10/12 h-10 p-3 outline-none hover:scale-105 transition-all font-light"
+              placeholder="Email"
               spellCheck={false}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <div
-              className="absolute top-3 end-3 cursor-pointer"
-              onClick={() => setShowPass(!showPass)}
-            >
-              {showPass ? <GoEye /> : <GoEyeClosed />}
+            <div className="border-b w-10/12 h-10 p-3 relative hover:scale-105 transition-all">
+              <input
+                name="password"
+                type={`${showPass ? "text" : "password"}`}
+                className=" outline-none w-full font-light"
+                placeholder="Password"
+                spellCheck={false}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <div
+                className="absolute top-3 end-3 cursor-pointer"
+                onClick={() => setShowPass(!showPass)}
+              >
+                {showPass ? <GoEye /> : <GoEyeClosed />}
+              </div>
+              <span className="absolute left-1 top-10 text-red-700">{errorMsg}</span>
             </div>
-            <span className="absolute left-1 top-10 text-red-700">{errorMsg}</span>
+            <div className="w-full py-2 h-18 flex justify-center items-center box-border">
+              <button disabled={status === "loading"} className={`py-2 px-4 rounded bg-(--primary-btn-bg) cursor-pointer transition-all ${status === "loading"? "hover:cursor-wait bg-amber-300" : "hover:cursor-pointer hover:text-lg"}`}>
+                Login
+              </button>
+            </div>
           </div>
-          <div className="w-full py-2 h-18 flex justify-center items-center box-border">
-            <button disabled={status === "loading"} className="py-2 px-4 rounded bg-[var(--primary-btn-bg)] cursor-pointer hover:text-lg transition-all">
-              Login
-            </button>
-          </div>
-        </div>
-        <span className="text-center font-light p-2">
-          Don't have an account{" "}
-          <Link to="/signup" className="text-blue-700 font-bold underline">
-            SignUp
-          </Link>
-        </span>
-      </form>
+          <span className="text-center font-light p-2">
+            Don't have an account{" "}
+            <Link to="/signup" className="text-blue-700 font-bold underline">
+              SignUp
+            </Link>
+          </span>
+        </form>
+      </div>
     </div>
   );
 };

@@ -11,7 +11,8 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { IoIosSend } from "react-icons/io";
 import Star from "../assets/star.svg";
-
+import Loader from '../components/Loader.jsx';
+import { ToastContainer, toast } from 'react-toastify';
 import { addReview } from '../features/product/productSlice.js';
 import {
     addSingleOrder,
@@ -20,9 +21,11 @@ import {
 const ProductDetails = () => {
   const { id } = useParams();
 
+  const notify = (toast_message) => toast.success(toast_message);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { productDetail } = useSelector((state) => state.productSlice);
+  const { productDetail, loading } = useSelector((state) => state.productSlice);
 
   const [isReviewOpen, setIsReviewOpen] = useState(true);
   const [isDescOpen, setIsDescOpen] = useState(true);
@@ -39,6 +42,7 @@ const ProductDetails = () => {
 
   const handleAddToCart = () => {
     dispatch(addToCart(productDetail));
+    notify("Added to Cart");
   }
 
   const handleOrderNow = () => {
@@ -68,8 +72,10 @@ const ProductDetails = () => {
     }
   };
 
+  if(loading) return <Loader />
   return (
     <div className='w-full flex flex-col md:flex-row items-center md:items-start'>
+      <ToastContainer className="font-bold" />
       <ImageCarousel images={productDetail?.images} />
 
       {/* About section */}
@@ -89,8 +95,8 @@ const ProductDetails = () => {
 
         {/* Add to cart or Buy */}
         <div className='mt-6 flex gap-3 text-white md:font-semibold'>
-            <button onClick={handleAddToCart} className='px-4 py-3 flex items-center rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Add to<CiShoppingCart className='text-3xl' /></button>
-            <button onClick={handleOrderNow} disabled={productDetail?.stock <= 0} className='px-4 py-3 rounded-4xl bg-[var(--secondary-btn-bg)] hover:cursor-pointer'>Buy Now</button>
+            <button onClick={handleAddToCart} className='px-4 py-3 flex items-center rounded-4xl bg-(--secondary-btn-bg) hover:cursor-pointer'>Add to<CiShoppingCart className='text-3xl' /></button>
+            <button onClick={handleOrderNow} disabled={productDetail?.stock <= 0} className='px-4 py-3 rounded-4xl bg-(--secondary-btn-bg) hover:cursor-pointer'>Buy Now</button>
         </div>
 
         {/* Description */}
@@ -106,11 +112,11 @@ const ProductDetails = () => {
         {/* Add Review */}
         <div className='mt-8'>
             <div className="pl-3 flex gap-2 text-4xl">
-                <img src={Star} onClick={() => setNewRating(1)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 1)? "filter-amber-700" : "filter-slate-500"}`} />
-                <img src={Star} onClick={() => setNewRating(2)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 2)? "filter-amber-700" : "filter-slate-500"}`} />
-                <img src={Star} onClick={() => setNewRating(3)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 3)? "filter-amber-700" : "filter-slate-500"}`} />
-                <img src={Star} onClick={() => setNewRating(4)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 4)? "filter-amber-700" : "filter-slate-500"}`} />
-                <img src={Star} onClick={() => setNewRating(5)} className={`h-[16px] hover:cursor-pointer ${(newRating >= 5)? "filter-amber-700" : "filter-slate-500"}`} />
+                <img src={Star} onClick={() => setNewRating(1)} className={`h-4 hover:cursor-pointer ${(newRating >= 1)? "filter-amber-700" : "filter-slate-500"}`} />
+                <img src={Star} onClick={() => setNewRating(2)} className={`h-4 hover:cursor-pointer ${(newRating >= 2)? "filter-amber-700" : "filter-slate-500"}`} />
+                <img src={Star} onClick={() => setNewRating(3)} className={`h-4 hover:cursor-pointer ${(newRating >= 3)? "filter-amber-700" : "filter-slate-500"}`} />
+                <img src={Star} onClick={() => setNewRating(4)} className={`h-4 hover:cursor-pointer ${(newRating >= 4)? "filter-amber-700" : "filter-slate-500"}`} />
+                <img src={Star} onClick={() => setNewRating(5)} className={`h-4 hover:cursor-pointer ${(newRating >= 5)? "filter-amber-700" : "filter-slate-500"}`} />
             </div>
             <div className='mt-3 relative w-[70%]'>
                 <input 
