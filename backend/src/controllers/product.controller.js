@@ -32,7 +32,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
             .json(
                 new ApiResponse(200, "Products Fetched",
                     {
-                        products: JSON.parse(cached),
+                        products: cached,
                         productCount,
                         filteredProductCount: 8,
                         resultPerPage
@@ -54,7 +54,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
         CACHE_TTL,
         JSON.stringify(products)
     );
-
+console.log("from mongo");
     return res
         .status(200)
         .json(
@@ -75,7 +75,7 @@ const productDetails = asyncHandler(async (req, res) => {
         return res
         .status(200)
         .json(
-            new ApiResponse(200, "Product Details fetched Successfully", { productDetail: JSON.parse(cached) })
+            new ApiResponse(200, "Product Details fetched Successfully", { productDetail: cached })
         )
     }
 
