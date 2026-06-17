@@ -1,19 +1,19 @@
 import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getUser } from "./features/auth/authSlice.js";
-import Loader from "./components/Loader";
+import { getUser } from "./features/auth/slices/authSlice.js";
+import Loader from "./components/ui/Loader";
 
 const Home = lazy(() => import("./pages/Home.jsx"));
-const SignUp = lazy(()=> import("./pages/SignUp.jsx"));
-const Login = lazy(() => import("./pages/Login.jsx"));
-const NavBar = lazy(() => import("./components/NavBar.jsx"));
-const Product = lazy(() => import("./pages/Products.jsx"));
+const SignUp = lazy(()=> import("./features/auth/pages/SignUp.jsx"));
+const Login = lazy(() => import("./features/auth/pages/Login.jsx"));
+const NavBar = lazy(() => import("./components/layout/NavBar.jsx"));
+const Product = lazy(() => import("./features/product/pages/Products.jsx"));
 const ContactUs = lazy(() => import("./pages/ContactUs.jsx"));
-const Profile = lazy(() => import("./pages/Profile.jsx"));
-const ProductDetails = lazy(() => import("./pages/ProductDetails.jsx"));
-const Cart = lazy(() => import("./pages/Cart.jsx"));
-const Order = lazy(() => import('./pages/Order.jsx'));
+const Profile = lazy(() => import("./features/profile/pages/Profile.jsx"));
+const ProductDetails = lazy(() => import("./features/product/pages/ProductDetails.jsx"));
+const Cart = lazy(() => import("./features/cart/pages/Cart.jsx"));
+const Order = lazy(() => import('./features/order/pages/Order.jsx'));
 
 
 const App = () => {

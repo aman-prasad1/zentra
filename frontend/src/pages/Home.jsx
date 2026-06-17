@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import heroImage from "../assets/ordering.png"; // Add your image to /assets folder
+import heroImage from "../assets/images/ordering.png"; // Add your image to /assets folder
 
 const messages = [
   "Your favorite tech delivered.",
