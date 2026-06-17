@@ -6,7 +6,9 @@
     --font-montserrat: 'montserrat';
     --main-bg: #ffffff;
     --searchbar-bg: #f5f5f5;
-    --primary-btn-bg: rgb(252, 154, 13, 1);
+    --hero-bg: #ebe8fe;
+    --primary-btn-bg: #171717;
+    --primary-btn-hover: #333333;
     --secondary-btn-bg: rgb(255, 146, 12);
     --sidebar-bg: rgb(220, 224, 225);
     --profile-sidebar-bg: rgb(15, 50, 58);

@@ -7,7 +7,7 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store} >
-    <main className='pt-16 box-border'>
+    <main className='pt-20 box-border'>
       <App />
     </main>
   </Provider>
