@@ -1,42 +1,60 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Zentra from '../../assets/images/zentra.png'
+import { FiShoppingBag } from "react-icons/fi";
+import { CiHeart, CiShoppingCart, CiUser } from "react-icons/ci";
 import SideBar from "./SideBar";
 import SearchBar from "./SearchBar";
-import { CiShoppingCart } from "react-icons/ci";
 
 const NavBar = () => {
-  
   const { user } = useSelector((state) => state.authSlice);
+  const cartCount = useSelector((state) => state.cartSlice?.cartItems?.length ?? 0);
 
   return (
-    <div className="w-full h-16 fixed z-30 top-0 left-0 bg-(--nav-bg) px-2 sm:px-4 flex flex-row-reverse md:flex-row justify-between items-center">
-      <div className="h-[80%] sm:h-full flex items-center">
-        <div className="h-full">
-          <Link to="/"><img src={Zentra} alt="Zentra" className="h-full mix-blend-color-burn" /> </Link>
+    <div className="w-full h-20 fixed z-30 top-0 left-0 bg-(--main-bg) px-4 sm:px-8 flex justify-between items-center border-b border-gray-100">
+
+      {/* Logo */}
+      <div className="flex items-center gap-3">
+        <div className="rounded-xl p-2 bg-black">
+          <Link to="/"><FiShoppingBag className="w-5 h-5 text-white" /></Link>
         </div>
-        <h1 className="text-2xl hidden md:block font-bold">
-            Zentra
-        </h1>
-        <div className="md:hidden pl-2">
-          <Link to="/cart" className="text-3xl"><CiShoppingCart /></Link>
+        <div className="hidden md:flex flex-col leading-tight">
+          <h1 className="text-[1.4em] font-bold leading-none tracking-tight">Zentra</h1>
+          <p className="text-[11px] text-gray-500 font-normal mt-0.5">Modern ecommerce</p>
         </div>
       </div>
 
       {/* Search Bar */}
       <SearchBar />
 
-      {/* Right div */}
-      <div className="h-full pr-4 hidden md:flex items-center justify-end gap-6 font-medium text-slate-700">
-        <Link to="/" className="hover:cursor-pointer hover:scale-105 transition-all">Home</Link>
-        <Link to="/products" className="hover:cursor-pointer hover:scale-105 transition-all">Products</Link>
-        <Link to="/contact" className="hover:cursor-pointer hover:scale-105 transition-all">Contact Us</Link>
-        <Link to="/cart" className="hover:cursor-pointer hover:scale-105 transition-all">Cart</Link>
-        {(user)? <Link to="/profile" className="h-8 w-8 rounded-full overflow-hidden"><img src={user?.avatar?.public_url} alt="User" className="h-full" /></Link> : <Link to="/login" className="hover:cursor-pointer hover:scale-105 transition-all">Login</Link>}
+      {/* Right Icons */}
+      <div className="flex items-center gap-5">
+
+        {/* Cart with badge */}
+        <Link to="/cart" className="relative text-[26px] text-gray-600 hover:text-black transition-colors">
+          <CiShoppingCart />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1.5 bg-black text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center font-semibold px-0.5">
+              {cartCount}
+            </span>
+          )}
+        </Link>
+
+        {/* User / Profile */}
+        {user ? (
+          <Link to="/profile" className="text-[26px] text-gray-600 hover:text-black transition-colors">
+            <CiUser />
+          </Link>
+        ) : (
+          <Link to="/login" className="text-[26px] text-gray-600 hover:text-black transition-colors">
+            <CiUser />
+          </Link>
+        )}
       </div>
+
+      {/* Mobile Sidebar */}
       <SideBar />
     </div>
-  )
-}
+  );
+};
 
 export default NavBar;

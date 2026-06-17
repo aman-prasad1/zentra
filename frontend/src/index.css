@@ -4,8 +4,8 @@
 
 :root {
     --font-montserrat: 'montserrat';
-    --main-bg: rgb(229, 229, 234);
-    --nav-bg: rgb(217, 217, 222);
+    --main-bg: #ffffff;
+    --searchbar-bg: #f5f5f5;
     --primary-btn-bg: rgb(252, 154, 13, 1);
     --secondary-btn-bg: rgb(255, 146, 12);
     --sidebar-bg: rgb(220, 224, 225);

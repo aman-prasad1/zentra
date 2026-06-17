@@ -4,28 +4,30 @@ import { HiMagnifyingGlass } from "react-icons/hi2";
 
 const SearchBar = () => {
   const navigate = useNavigate();
-
-  const [keyword, setkeyword] = useState("");
+  const [keyword, setKeyword] = useState("");
 
   const handleSearch = (e) => {
     e.preventDefault();
-    navigate(`/products?keyword=${keyword}`)
-  }
-  
+    navigate(`/products?keyword=${keyword}`);
+  };
+
   return (
-    <form onSubmit={handleSearch} className="relative h-full flex items-center w-6/12 md:w-3/12 ">
+    <form
+      onSubmit={handleSearch}
+      className="relative flex items-center w-5/12 md:w-[38%] "
+    >
+      {/* Left icon */}
+      <HiMagnifyingGlass className="absolute left-3.5 text-gray-400 text-[17px] pointer-events-none" />
+
       <input
         name="keyword"
         type="text"
-        placeholder="Search"
+        placeholder="Search products, brands, categories"
         spellCheck={false}
         autoComplete="off"
-        onChange={(e) => setkeyword(e.target.value)}
-        className="p-2 pr-10 border outline-none border-slate-400 rounded-2xl h-[70%] w-full bg-slate-200 "
+        onChange={(e) => setKeyword(e.target.value)}
+        className="w-full h-[3.3em] pl-10 pr-4 py-2 rounded-full bg-(--searchbar-bg) border-none outline-none text-sm text-gray-700 placeholder-gray-400 shadow-lg"
       />
-      <button className="absolute right-4 hover:cursor-pointer">
-        <HiMagnifyingGlass className="hover:cursor-pointer scale-125" />
-      </button>
     </form>
   );
 };
