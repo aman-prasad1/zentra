@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { CiHeart, CiShoppingCart, CiUser } from "react-icons/ci";
 import { FiShoppingBag } from "react-icons/fi";
 import { IoHomeOutline } from "react-icons/io5";
+import { BiCategoryAlt } from "react-icons/bi";
 import { LuStar } from "react-icons/lu";
 import { BsTruck } from "react-icons/bs";
 import { IoShieldOutline } from "react-icons/io5";
@@ -51,7 +52,7 @@ const Home = () => {
         <ul className="flex gap-10">
           <li><Link to="/" className="flex gap-2"><span><IoHomeOutline className="text-lg" /></span><span>Home</span></Link></li>
           <li><Link to="/products" className="flex gap-2"><span><FiShoppingBag className="text-lg" /></span><span>Shop</span></Link></li>
-          <li><Link to="/" className="flex gap-2"><span><IoHomeOutline className="text-lg" /></span><span>Categories</span></Link></li>
+          <li><button onClick={() => document.getElementById('category-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex gap-2 hover:cursor-pointer"><span><BiCategoryAlt className="text-lg" /></span><span>Categories</span></button></li>
           <li><Link to="/cart" className="flex gap-2"><span><CiShoppingCart className="text-lg" /></span><span>Cart</span></Link></li>
           <li><Link to="/profile" className="flex gap-2"><span><CiUser className="text-lg" /></span><span>Account</span></Link></li>
         </ul>
@@ -104,7 +105,7 @@ const Home = () => {
 
 
       {/* Category */}
-      <div className="mt-14 flex flex-col gap-3">
+      <div id="category-section" className="mt-14 flex flex-col gap-3">
         <h3 className="text-xl font-semibold">Shop by Category</h3>
         <p>Browse the latest curated collections</p>
 

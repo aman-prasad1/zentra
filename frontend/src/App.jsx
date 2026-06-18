@@ -8,6 +8,7 @@ const Home = lazy(() => import("./pages/Home.jsx"));
 const SignUp = lazy(()=> import("./features/auth/pages/SignUp.jsx"));
 const Login = lazy(() => import("./features/auth/pages/Login.jsx"));
 const NavBar = lazy(() => import("./components/layout/NavBar.jsx"));
+const Footer = lazy(() => import("./components/layout/Footer.jsx"));
 const Product = lazy(() => import("./features/product/pages/Products.jsx"));
 const ContactUs = lazy(() => import("./pages/ContactUs.jsx"));
 const Profile = lazy(() => import("./features/profile/pages/Profile.jsx"));
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path='/order' element={<Order />} />
         </Routes>
+        <Footer />
       </Suspense>
     </BrowserRouter>
   )
