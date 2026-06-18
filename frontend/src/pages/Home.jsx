@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { CiHeart, CiShoppingCart, CiUser } from "react-icons/ci";
 import { FiShoppingBag } from "react-icons/fi";
 import { IoHomeOutline } from "react-icons/io5";
@@ -8,6 +9,10 @@ import { LuStar } from "react-icons/lu";
 import { BsTruck } from "react-icons/bs";
 import { IoShieldOutline } from "react-icons/io5";
 import { GrPowerCycle } from "react-icons/gr";
+import { HiOutlineArrowRight } from "react-icons/hi";
+import { HiOutlineFire } from "react-icons/hi2";
+import RatingsStar from "../components/ui/RatingsStar";
+import { getProducts } from "../features/product/slices/productSlice";
 import heroImage from "../assets/images/hero.png";
 import mensCategory from "../assets/images/mensCategory.png";
 import womensCategory from "../assets/images/womensCategory.png";
@@ -28,6 +33,15 @@ const Home = () => {
   const [messageIndex, setMessageIndex] = useState(0);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { products, loading } = useSelector((state) => state.productSlice);
+
+  useEffect(() => {
+    dispatch(getProducts({ page: 1 }));
+  }, [dispatch]);
+
+  // Take at most 8 products for trending display
+  const trendingProducts = products?.slice(0, 8) || [];
 
   return (
     <div className="bg-(--main-bg) px-20 ">
@@ -97,32 +111,129 @@ const Home = () => {
         {/* category cards */}
         <div className="grid grid-cols-5 gap-5 mt-5">
           {/* mens category card */}
-          <div className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
+          <Link to="/products?keyword=Mens" className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
             <img src={mensCategory} alt="Men's Category" className="w-full h-[16em] object-cover transition-transform duration-300 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent rounded-lg pointer-events-none"></div>
             <span className="absolute bottom-3 left-4 text-white font-semibold text-lg">Mens</span>
-          </div>
-          <div className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
+          </Link>
+          <Link to="/products?keyword=Womens" className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
             <img src={womensCategory} alt="Women's Category" className="w-full h-[16em] object-cover transition-transform duration-300 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent rounded-lg pointer-events-none"></div>
             <span className="absolute bottom-3 left-4 text-slate-200 font-semibold text-lg">Womens</span>
-          </div>
-          <div className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
+          </Link>
+          <Link to="/products?keyword=Accessories" className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
             <img src={accessoriesCategory} alt="Accessories Category" className="w-full h-[16em] object-cover transition-transform duration-300 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent rounded-lg pointer-events-none"></div>
             <span className="absolute bottom-3 left-4 text-slate-200 font-semibold text-lg">Accessories</span>
-          </div>
-          <div className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
+          </Link>
+          <Link to="/products?keyword=Electronics" className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
             <img src={electronicsCategory} alt="Electronics Category" className="w-full h-[16em] object-cover transition-transform duration-300 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent rounded-lg pointer-events-none"></div>
             <span className="absolute bottom-3 left-4 text-slate-200 font-semibold text-lg">Electronics</span>
-          </div>
-          <div className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
+          </Link>
+          <Link to="/products?keyword=Home" className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group">
             <img src={homeCategory} alt="Home Category" className="w-full h-[16em] object-cover transition-transform duration-300 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent rounded-lg pointer-events-none"></div>
             <span className="absolute bottom-3 left-4 text-slate-200 font-semibold text-lg">Home</span>
-          </div>
+          </Link>
         </div>
+      </div>
+
+
+      {/* Trending Products */}
+      <div className="mt-14 flex flex-col gap-3 pb-16">
+
+        {/* Section header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-3 py-1.5 bg-orange-50 text-orange-600 rounded-full text-xs font-medium flex items-center gap-1.5">
+                <HiOutlineFire className="text-sm" />Trending Now
+              </span>
+            </div>
+            <h3 className="text-xl font-semibold">Trending Products</h3>
+            <p className="text-gray-500 text-sm mt-1">Handpicked favorites our customers love</p>
+          </div>
+          <Link to="/products" className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black transition group">
+            View All
+            <HiOutlineArrowRight className="text-base group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+        {/* Product cards grid */}
+        {loading ? (
+          <div className="grid grid-cols-4 gap-6 mt-5">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 rounded-xl h-[16em]"></div>
+                <div className="mt-3 space-y-2">
+                  <div className="bg-gray-200 rounded h-4 w-3/4"></div>
+                  <div className="bg-gray-200 rounded h-4 w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-6 mt-5">
+            {trendingProducts.map((product) => (
+              <div
+                key={product._id}
+                onClick={() => navigate(`/products/details/${product._id}`)}
+                className="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100"
+              >
+                {/* Product image */}
+                <div className="relative overflow-hidden h-[16em] bg-gray-50">
+                  <img
+                    src={product?.images?.[0]?.public_url}
+                    alt={product?.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+
+                  {/* Gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+                  {/* Wishlist icon */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); }}
+                    className="absolute top-3 right-3 w-9 h-9 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 hover:cursor-pointer"
+                  >
+                    <CiHeart className="text-xl text-gray-700" />
+                  </button>
+
+                  {/* Category badge */}
+                  {product?.category && (
+                    <span className="absolute top-3 left-3 px-2.5 py-1 bg-white/80 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      {product.category}
+                    </span>
+                  )}
+                </div>
+
+                {/* Product info */}
+                <div className="p-4">
+                  <h4 className="text-sm font-medium text-gray-800 multiline-ellipsis leading-snug mb-2">
+                    {product?.name}
+                  </h4>
+
+                  <div className="flex items-center gap-2 mb-2">
+                    <RatingsStar ratings={product?.ratings} />
+                    {product?.numberOfReviews > 0 && (
+                      <span className="text-xs text-gray-400">({product.numberOfReviews})</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-semibold text-gray-900">₹{product?.price?.toLocaleString()}</span>
+                    {product?.stock > 0 ? (
+                      <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">In Stock</span>
+                    ) : (
+                      <span className="text-xs text-red-500 font-medium bg-red-50 px-2 py-0.5 rounded-full">Out of Stock</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       
     </div>
@@ -130,3 +241,4 @@ const Home = () => {
 };
 
 export default Home;
+
