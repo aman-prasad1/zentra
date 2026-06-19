@@ -1,62 +1,80 @@
 import { GoEye, GoEyeClosed } from "react-icons/go";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAccount } from "../../auth/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineDelete } from "react-icons/ai";
 
-
 const AccountsSecurity = () => {
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((state) => state.authSlice);
 
-  const [currPass, setCurrPass] = useState("")
+  const [currPass, setCurrPass] = useState("");
   const [showCurrPass, setShowCurrPass] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-
 
   useEffect(() => {
-    setErrorMsg(error);
-  },[error])
-
-  useEffect(() => {
-    if(!user) {
+    if (!user) {
       navigate('/login');
     }
-  },[user])
+  }, [user, navigate]);
 
-  const handleDelete = () => {
-    dispatch(deleteAccount(currPass));
-  }
+  const handleDelete = (e) => {
+    e.preventDefault();
+    if (window.confirm("Are you absolutely sure you want to delete your account? This action is irreversible.")) {
+      dispatch(deleteAccount(currPass));
+    }
+  };
 
   return (
-    <div className="w-full pt-20 flex justify-center">
-      <div className="w-[35rem] flex flex-col items-center gap-8 shadow-2xl rounded-2xl p-10">
-        <div className="border-b w-full h-10 p-3 relative hover:scale-105 transition-all">
-          <input
-            name="password"
-            type={`${showCurrPass ? "text" : "password"}`}
-            className=" outline-none w-full font-light"
-            placeholder="Current Password"
-            spellCheck={false}
-            onChange={(e) => setCurrPass(e.target.value)}
-          />
-          <div
-            className="absolute top-3 end-3 cursor-pointer"
-            onClick={() => setShowCurrPass(!showCurrPass)}
-          >
-            {showCurrPass ? <GoEye /> : <GoEyeClosed />}
+    <div className="max-w-md mx-auto flex flex-col">
+      <div className="border-b border-gray-100 pb-4 mb-6">
+        <h2 className="text-xl font-bold text-gray-900">Delete Account</h2>
+        <p className="text-xs text-gray-500 mt-1">Permanently remove your personal details and account history</p>
+      </div>
+
+      <div className="bg-red-50 text-red-700 text-xs p-4 rounded-2xl border border-red-100 mb-6 leading-relaxed font-medium">
+        <strong>Warning:</strong> Deleting your account will immediately erase all of your active sessions, profile details, and shopping records. This cannot be undone.
+      </div>
+
+      <form onSubmit={handleDelete} className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2 relative">
+          <label htmlFor="confirmPass" className="text-sm font-semibold text-gray-700">Enter Password to Confirm</label>
+          <div className="relative flex items-center">
+            <input
+              required
+              id="confirmPass"
+              name="confirmPass"
+              type={showCurrPass ? "text" : "password"}
+              value={currPass}
+              onChange={(e) => setCurrPass(e.target.value)}
+              placeholder="••••••••"
+              spellCheck={false}
+              className="w-full bg-gray-50 border border-gray-200 outline-none rounded-xl py-3 pl-4 pr-12 text-sm focus:border-red-500 focus:bg-white transition"
+            />
+            <button
+              type="button"
+              className="absolute right-4 text-gray-400 hover:text-black transition cursor-pointer"
+              onClick={() => setShowCurrPass(!showCurrPass)}
+            >
+              {showCurrPass ? <GoEye className="text-lg" /> : <GoEyeClosed className="text-lg" />}
+            </button>
           </div>
         </div>
-        <span className="text-red-700 h-2">{errorMsg}</span>
-        <div className="w-full py-2 h-18 flex justify-center items-center box-border">
-          <button disabled={status === "loading"} onClick={handleDelete} className="flex items-center gap-1 text-red-800 border rounded p-2 hover:cursor-pointer">Delete Account <AiOutlineDelete /></button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
-export default AccountsSecurity
+        {error && <span className="text-xs font-semibold text-red-600 mt-1">*{error}</span>}
+
+        <button 
+          type="submit"
+          disabled={status === "loading" || !currPass} 
+          className="w-full py-3.5 rounded-2xl bg-red-600 text-white hover:bg-red-700 font-bold transition flex items-center justify-center gap-2 shadow-sm hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <AiOutlineDelete className="text-lg" />
+          <span>{status === "loading" ? "Deleting Account..." : "Permanently Delete Account"}</span>
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default AccountsSecurity;
