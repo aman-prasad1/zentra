@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { User } from '../models/user.model.js';
 import { sendVerificationEmail } from '../utils/sendVerificationEmail.js';
+import { sendContactEmail } from '../utils/sendContactEmail.js';
 import { uploadOnCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import crypto from 'crypto';
 import fs from 'fs';
@@ -558,6 +559,26 @@ const getAllUser = asyncHandler(async (req, res) => {
         )
 })
 
+const sendContactMessage = asyncHandler(async (req, res) => {
+    const { name, email, subject, message } = req.body;
+
+    if ([name, email, subject, message].some((field) => !field || field?.trim() === "")) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const emailResponse = await sendContactEmail(name, email, subject, message);
+
+    if (!emailResponse.success) {
+        throw new ApiError(500, "Failed to send contact email");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, "Message sent successfully")
+        );
+})
+
 export {
     registerUser,
     loginUser,
@@ -570,6 +591,7 @@ export {
     updateProfile,
     deleteProfile,
     refreshAccessToken,
+    sendContactMessage,
     
     updateRole,
     deleteUser,

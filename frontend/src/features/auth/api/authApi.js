@@ -108,3 +108,13 @@ export const updateProfileApi = async (data) => {
         throw new Error(message);
     }
 }
+
+export const sendContactMessageApi = async (data) => {
+    try {
+        const res = await axios.post(`${URL}/contact-message`, data, { withCredentials: true });
+        return res.data;
+    } catch (error) {
+        const message = error.response?.data?.message || "Failed to send message";
+        throw new Error(message);
+    }
+}
