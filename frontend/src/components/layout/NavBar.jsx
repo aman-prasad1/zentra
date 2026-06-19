@@ -8,6 +8,7 @@ import SearchBar from "./SearchBar";
 const NavBar = () => {
   const { user } = useSelector((state) => state.authSlice);
   const cartCount = useSelector((state) => state.cartSlice?.cartItems?.length ?? 0);
+  const wishlistCount = useSelector((state) => state.wishlistSlice?.items?.length ?? 0);
 
   return (
     <div className="w-full h-20 fixed z-30 top-0 left-0 bg-(--main-bg) px-4 sm:px-8 flex justify-between items-center border-b border-gray-100">
@@ -28,6 +29,15 @@ const NavBar = () => {
 
       {/* Right Icons */}
       <div className="flex items-center gap-5">
+        {/* Wishlist with badge */}
+        <Link to="/wishlist" className="relative text-[26px] text-gray-600 hover:text-black transition-colors">
+          <CiHeart />
+          {wishlistCount > 0 && (
+            <span className="absolute -top-1 -right-1.5 bg-black text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center font-semibold px-0.5">
+              {wishlistCount}
+            </span>
+          )}
+        </Link>
 
         {/* Cart with badge */}
         <Link to="/cart" className="relative text-[26px] text-gray-600 hover:text-black transition-colors">

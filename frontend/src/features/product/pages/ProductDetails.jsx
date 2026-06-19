@@ -3,13 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { getProductDetails, addReview } from '../slices/productSlice.js';
+import { toggleWishlist } from '../slices/wishlistSlice.js';
 import { addToCart } from '../../cart/slices/cartSlice.js';
 import RatingsStar from '../../../components/ui/RatingsStar.jsx';
-import { CiShoppingCart } from "react-icons/ci";
+import { CiShoppingCart, CiHeart } from "react-icons/ci";
 import { IoIosArrowDown, IoIosArrowUp, IoIosSend } from "react-icons/io";
 import { IoCloseOutline, IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 import { HiOutlineChevronRight } from "react-icons/hi";
-import { AiFillStar } from "react-icons/ai";
+import { AiFillStar, AiFillHeart } from "react-icons/ai";
 import Loader from '../../../components/ui/Loader.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import { addSingleOrder } from '../../order/slices/orderSlice.js';
@@ -22,6 +23,7 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { productDetail, loading } = useSelector((state) => state.productSlice);
+  const wishlistItems = useSelector((state) => state.wishlistSlice.items);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -243,6 +245,16 @@ const ProductDetails = () => {
               className="flex-1 py-4 px-6 rounded-2xl bg-(--secondary-btn-bg) text-black hover:opacity-95 font-bold transition flex items-center justify-center hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Buy Now
+            </button>
+            <button
+              onClick={() => dispatch(toggleWishlist(productDetail))}
+              className="py-4 px-5 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center hover:cursor-pointer transition shadow-sm hover:shadow-md"
+            >
+              {wishlistItems.some((item) => item._id === productDetail?._id) ? (
+                <AiFillHeart className="text-2xl text-red-500 animate-scaleIn" />
+              ) : (
+                <CiHeart className="text-2xl text-gray-700" />
+              )}
             </button>
           </div>
 

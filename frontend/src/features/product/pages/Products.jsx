@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { getProducts } from "../slices/productSlice";
+import { toggleWishlist } from "../slices/wishlistSlice";
 import RatingsStar from "../../../components/ui/RatingsStar";
 import { CiHeart } from "react-icons/ci";
+import { AiFillHeart } from "react-icons/ai";
 import { HiOutlineChevronRight } from "react-icons/hi";
 import { LuSlidersHorizontal } from "react-icons/lu";
 import { IoCloseOutline } from "react-icons/io5";
@@ -16,6 +18,7 @@ const Products = () => {
   const { products, productCount, resultPerPage, loading } = useSelector(
     (state) => state.productSlice
   );
+  const wishlistItems = useSelector((state) => state.wishlistSlice.items);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -281,10 +284,15 @@ const Products = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
+                          dispatch(toggleWishlist(product));
                         }}
                         className="absolute top-3 right-3 w-9 h-9 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 hover:cursor-pointer"
                       >
-                        <CiHeart className="text-xl text-gray-700" />
+                        {wishlistItems.some((item) => item._id === product._id) ? (
+                          <AiFillHeart className="text-xl text-red-500 animate-scaleIn" />
+                        ) : (
+                          <CiHeart className="text-xl text-gray-700" />
+                        )}
                       </button>
 
                       {/* Category Badge */}

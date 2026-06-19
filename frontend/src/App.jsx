@@ -15,6 +15,7 @@ const Profile = lazy(() => import("./features/profile/pages/Profile.jsx"));
 const ProductDetails = lazy(() => import("./features/product/pages/ProductDetails.jsx"));
 const Cart = lazy(() => import("./features/cart/pages/Cart.jsx"));
 const Order = lazy(() => import('./features/order/pages/Order.jsx'));
+const Wishlist = lazy(() => import("./features/product/pages/Wishlist.jsx"));
 
 
 const App = () => {
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/products/details/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path='/order' element={<Order />} />
+          <Route path="/wishlist" element={<Wishlist />} />
         </Routes>
         <Footer />
       </Suspense>

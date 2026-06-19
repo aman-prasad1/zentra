@@ -14,6 +14,8 @@ import { HiOutlineArrowRight } from "react-icons/hi";
 import { HiOutlineFire } from "react-icons/hi2";
 import RatingsStar from "../components/ui/RatingsStar";
 import { getProducts } from "../features/product/slices/productSlice";
+import { toggleWishlist } from "../features/product/slices/wishlistSlice";
+import { AiFillHeart } from "react-icons/ai";
 import heroImage from "../assets/images/hero.png";
 import mensCategory from "../assets/images/mensCategory.png";
 import womensCategory from "../assets/images/womensCategory.png";
@@ -36,6 +38,7 @@ const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { products, loading } = useSelector((state) => state.productSlice);
+  const wishlistItems = useSelector((state) => state.wishlistSlice.items);
 
   useEffect(() => {
     dispatch(getProducts({ page: 1 }));
@@ -195,10 +198,17 @@ const Home = () => {
 
                   {/* Wishlist icon */}
                   <button
-                    onClick={(e) => { e.stopPropagation(); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      dispatch(toggleWishlist(product));
+                    }}
                     className="absolute top-3 right-3 w-9 h-9 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 hover:cursor-pointer"
                   >
-                    <CiHeart className="text-xl text-gray-700" />
+                    {wishlistItems.some((item) => item._id === product._id) ? (
+                      <AiFillHeart className="text-xl text-red-500 animate-scaleIn" />
+                    ) : (
+                      <CiHeart className="text-xl text-gray-700" />
+                    )}
                   </button>
 
                   {/* Category badge */}
