@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FiShoppingBag } from "react-icons/fi";
 import { CiHeart, CiShoppingCart, CiUser } from "react-icons/ci";
-import SideBar from "./SideBar";
 import SearchBar from "./SearchBar";
 
 const NavBar = () => {
@@ -60,9 +59,6 @@ const NavBar = () => {
           </Link>
         )}
       </div>
-
-      {/* Mobile Sidebar */}
-      <SideBar />
     </div>
   );
 };
