@@ -1,15 +1,10 @@
-import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router';
+import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { verifyUser } from '../slices/authSlice';
 
-const VerifyOTP = ({email}) => {
-    console.log(email)
+const VerifyOTP = ({ email }) => {
   const dispatch = useDispatch();
-  const { status, error} = useSelector((state) => state.authSlice);
-
-  const navigate = useNavigate();
-
+  const { status, error } = useSelector((state) => state.authSlice);
   const inputRefs = Array.from({ length: 6 }, () => useRef());
 
   const handleChange = (e, index) => {
@@ -27,38 +22,45 @@ const VerifyOTP = ({email}) => {
 
   const handleVerify = async (e) => {
     e.preventDefault();
-
     let optStr = "";
-    inputRefs.map((ref) => {
-        optStr += ref.current.value
-    })
-
+    inputRefs.forEach((ref) => {
+      optStr += ref.current.value;
+    });
     const verifyCode = Number(optStr);
-
-    dispatch(verifyUser({email: email, verifyCode: verifyCode}))
-  }
+    dispatch(verifyUser({ email, verifyCode }));
+  };
 
   return (
-    <form onSubmit={handleVerify} className="w-[360px] h-[200px] flex flex-col items-center z-1 p-3 absolute shadow-2xl rounded-2xl">
-      <div className="w-full text-center text-4xl text-slate-800 font-semibold">
-        Enter OTP
+    <form onSubmit={handleVerify} className="w-full flex flex-col items-center gap-6">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-gray-900">Verify OTP</h2>
+        <p className="text-xs text-gray-500 mt-1">A 6-digit verification code has been sent to {email}</p>
       </div>
-      <span>OTP sent to your email</span>
-      <div className="grid grid-cols-6 place-items-center gap-2 mt-5">
+
+      <div className="flex gap-2 justify-center my-2">
         {inputRefs.map((ref, i) => (
-            <input
+          <input
             name="otp"
             key={i}
             type="text"
             maxLength={1}
             ref={ref}
-            className="border w-[45px] h-[35px] rounded text-center text-2xl"
             onChange={(e) => handleChange(e, i)}
             onKeyDown={(e) => handleBackspace(e, i)}
-            />
+            className="w-12 h-12 border border-gray-200 bg-gray-50 rounded-xl text-center text-xl font-bold outline-none focus:border-black focus:bg-white transition"
+          />
         ))}
       </div>
-      <button disabled={status === "loading"} className="py-2 px-4 mt-4 rounded bg-amber-500 cursor-pointer hover:text-xl transition-all">Verify</button>
+
+      {error && <span className="text-xs font-semibold text-red-650 self-center">*{error}</span>}
+
+      <button 
+        type="submit"
+        disabled={status === "loading"}
+        className="w-full py-3.5 bg-black hover:bg-gray-950 text-white rounded-2xl font-bold transition hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {status === "loading" ? "Verifying..." : "Verify & Register"}
+      </button>
     </form>
   );
 };
