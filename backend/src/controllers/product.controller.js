@@ -22,61 +22,66 @@ const getAllProducts = asyncHandler(async (req, res) => {
         q: req.query.keyword,
         page: req.query.page,
         limit: resultPerPage,
+        category: req.query.category,
+        priceGte: req.query['price[gte]'],
+        priceLte: req.query['price[lte]'],
     });
 
 
     const cached = await redis.get(cacheKey);
     if (cached) { // if allready cached in redis return the response
-        return res
-            .status(200)
-            .json(
-                new ApiResponse(200, "Products Fetched",
-                    {
-                        products: cached,
-                        productCount,
-                        filteredProductCount: 8,
-                        resultPerPage
-                    })
-            )
+        const responseData = typeof cached === 'string' ? JSON.parse(cached) : cached;
+        if (responseData && !Array.isArray(responseData)) {
+            return res
+                .status(200)
+                .json(
+                    new ApiResponse(200, "Products Fetched", responseData)
+                )
+        }
     }
+
+    // Get count of filtered products before pagination is applied
+    const countApiFeature = new ApiFeatures(Product.find(), req.query)
+        .search()
+        .filter();
+    const filteredProductCount = await countApiFeature.query.countDocuments();
 
     const apiFeature = new ApiFeatures(Product.find(), req.query)
         .search()
         .filter()
         .pagination(resultPerPage);
 
-
     let products = await apiFeature.query;
-    let filteredProductCount = products.length;
+
+    const responseData = {
+        products,
+        productCount,
+        filteredProductCount,
+        resultPerPage
+    };
 
     await redis.setex( // set response with uniquely created cacheKey
         cacheKey,
         CACHE_TTL,
-        JSON.stringify(products)
+        JSON.stringify(responseData)
     );
-console.log("from mongo");
+
     return res
         .status(200)
         .json(
-            new ApiResponse(200, "Products Fetched",
-                {
-                    products,
-                    productCount,
-                    filteredProductCount,
-                    resultPerPage
-                })
+            new ApiResponse(200, "Products Fetched", responseData)
         )
 })
 
 const productDetails = asyncHandler(async (req, res) => {
     const cacheKey = `productDetail:${req.params.id}`
     const cached = await redis.get(cacheKey);
-    if(cached) {
+    if (cached) {
         return res
-        .status(200)
-        .json(
-            new ApiResponse(200, "Product Details fetched Successfully", { productDetail: cached })
-        )
+            .status(200)
+            .json(
+                new ApiResponse(200, "Product Details fetched Successfully", { productDetail: cached })
+            )
     }
 
     const productDetail = await Product.findById(req.params.id);
@@ -183,7 +188,7 @@ const deleteReview = asyncHandler(async (req, res) => {
 const getProductReviews = asyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
 
-    if(!product) {
+    if (!product) {
         throw new ApiError(404, "Product not found");
     }
 

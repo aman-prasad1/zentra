@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authSlice from '../features/auth/authSlice';
-import productSlice from '../features/product/productSlice';
-import cartSlice from '../features/cart/cartSlice';
-import orderSlice from '../features/order/orderSlice.js';
-import adminSlice from '../features/admin/adminSlice.js';
+import authSlice from '../features/auth/slices/authSlice';
+import productSlice from '../features/product/slices/productSlice';
+import cartSlice from '../features/cart/slices/cartSlice';
+import orderSlice from '../features/order/slices/orderSlice.js';
+import adminSlice from '../features/admin/slices/adminSlice.js';
+import wishlistSlice from '../features/product/slices/wishlistSlice';
 
 export const store = configureStore({
     reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
         cartSlice,
         orderSlice,
         adminSlice,
+        wishlistSlice,
     },
 })

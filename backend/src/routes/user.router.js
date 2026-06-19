@@ -12,12 +12,13 @@ import {
     getUserDetails,
     updateProfile,
     deleteProfile,
+    refreshAccessToken,
+    sendContactMessage,
     
     updateRole,
     deleteUser,
     getSingleUser,
     getAllUser,
-    refreshAccessToken,
  } from '../controllers/user.controller.js';
 
 
@@ -35,6 +36,7 @@ router.route("/get-user").get(verifyJWT, getUserDetails);
 router.route("/update-profile").put(verifyJWT, upload.single('newAvatar'), updateProfile);
 router.route("/delete-profile").delete(verifyJWT, deleteProfile);
 router.route("/refresh-tokens").post(refreshAccessToken);
+router.route("/contact-message").post(verifyJWT, sendContactMessage);
 
 
 // Admin routes
