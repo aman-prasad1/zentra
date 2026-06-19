@@ -5,14 +5,22 @@ const URL = `${BASE_URL}/product`;
 
 export const getProductsApi = async (data) => {
     try {
+        const params = {
+            keyword: data?.keyword || undefined,
+            category: data?.category || undefined,
+            page: data?.page || undefined
+        };
+
+        if (data?.minPrice !== "" && data?.minPrice !== undefined && data?.minPrice !== null) {
+            params['price[gte]'] = data.minPrice;
+        }
+        if (data?.maxPrice !== "" && data?.maxPrice !== undefined && data?.maxPrice !== null) {
+            params['price[lte]'] = data.maxPrice;
+        }
+
         const res = await axios.get(`${URL}/all-products`,
             {
-                params: {
-                    keyword: data?.keyword,
-                    'price[gte]': data?.maxPrice,
-                    'price[lt]': data?.minPrice,
-                    page: data?.page
-                },
+                params,
                 withCredentials: true
             }
         );

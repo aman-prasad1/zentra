@@ -7,10 +7,20 @@ class ApiFeatures {
     search() {
         const keyword = this.queryStr.keyword
             ? {
-                name: {
-                    $regex: this.queryStr.keyword,
-                    $options: "i"
-                }
+                $or: [
+                    {
+                        name: {
+                            $regex: this.queryStr.keyword,
+                            $options: "i"
+                        }
+                    },
+                    {
+                        category: {
+                            $regex: this.queryStr.keyword,
+                            $options: "i"
+                        }
+                    }
+                ]
             } : {};
 
         this.query = this.query.find({ ...keyword });
@@ -26,6 +36,9 @@ class ApiFeatures {
         const mongoQuery = {};
 
         Object.keys(queryCopy).forEach((key) => {
+            if (queryCopy[key] === "" || queryCopy[key] === null || queryCopy[key] === undefined) {
+                return;
+            }
             const match = key.match(/^(\w+)\[(gte|gt|lte|lt)\]$/);
             if (match) {
                 const field = match[1]; // e.g., "price"
@@ -35,7 +48,12 @@ class ApiFeatures {
                 if (!mongoQuery[field]) mongoQuery[field] = {};
                 mongoQuery[field][operator] = value;
             } else {
-                mongoQuery[key] = isNaN(queryCopy[key]) ? queryCopy[key] : Number(queryCopy[key]);
+                const val = queryCopy[key];
+                if (typeof val === 'string' && isNaN(val)) {
+                    mongoQuery[key] = { $regex: `^${val}$`, $options: "i" };
+                } else {
+                    mongoQuery[key] = isNaN(val) ? val : Number(val);
+                }
             }
         });
 

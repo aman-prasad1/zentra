@@ -64,7 +64,7 @@ const productSlice = createSlice(
                 })
                 .addCase(getProducts.fulfilled, (state, action) => {
                     state.products = action.payload.data.products;
-                    state.productCount = action.payload.data.productCount;
+                    state.productCount = action.payload.data.filteredProductCount;
                     state.resultPerPage = action.payload.data.resultPerPage;
                     state.loading = false;
                     state.error = null;
