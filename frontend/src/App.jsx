@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./features/auth/slices/authSlice.js";
 import Loader from "./components/ui/Loader";
+import ScrollToTop from "./components/layout/ScrollToTop";
+
 
 const Home = lazy(() => import("./pages/Home.jsx"));
 const SignUp = lazy(()=> import("./features/auth/pages/SignUp.jsx"));
@@ -30,6 +32,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Suspense fallback={<Loader />}>
         <NavBar /> {/* NavBar */}
         <Routes>
