@@ -39,7 +39,7 @@ const Home = () => {
     <div className="bg-(--main-bg) px-4 sm:px-8 lg:px-20 py-2">
       
       {/* Top bar navigation */}
-      <div className="h-[4em] flex items-center justify-center border-b border-gray-150 overflow-x-auto scrollbar-none">
+      <div className="h-[4em] flex items-center justify-start md:justify-center border-b border-gray-150 overflow-x-auto scrollbar-none">
         <ul className="flex gap-6 sm:gap-10 shrink-0 py-2">
           <li><Link to="/" className="flex gap-2 text-sm text-gray-600 hover:text-black font-semibold transition"><span><IoHomeOutline className="text-lg" /></span><span>Home</span></Link></li>
           <li><Link to="/products" className="flex gap-2 text-sm text-gray-600 hover:text-black font-semibold transition"><span><FiShoppingBag className="text-lg" /></span><span>Shop</span></Link></li>
